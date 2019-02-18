@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Максим Дмитриев](https://up.htmlacademy.ru/ecmascript/8/user/43745).
-* Наставник: `Неизвестно`.
+* Наставник: `Кекс`.
 
 ---
 
