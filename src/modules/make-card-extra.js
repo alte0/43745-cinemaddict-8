@@ -1,19 +1,19 @@
 /**
- * @param {String} srcImg
+ * @param {Object} card
  * @return {String}
  */
-export default (srcImg) => {
+export default (card) => {
   return `
   <article class="film-card film-card--no-controls">
-    <h3 class="film-card__title">Incredibles 2</h3>
-    <p class="film-card__rating">9.8</p>
+    <h3 class="film-card__title">${card.name}</h3>
+    <p class="film-card__rating">${card.rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">2018</span>
-      <span class="film-card__duration">1h&nbsp;13m</span>
-      <span class="film-card__genre">Comedy</span>
+      <span class="film-card__year">${card.year}</span>
+      <span class="film-card__duration">${card.duration}</span>
+      <span class="film-card__genre">${card.genre}</span>
     </p>
-    <img src="./images/posters/${srcImg}" alt="" class="film-card__poster">
-    <button class="film-card__comments">13 comments</button>
+    <img src="./images/posters/${card.imgSource}" alt="" class="film-card__poster">
+    <button class="film-card__comments">${card.amountComments} comments</button>
   </article>
   `;
 };

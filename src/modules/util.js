@@ -1,5 +1,3 @@
-const MAX_NUM = 7;
-const MIN_NUM = 1;
 /**
  * @param {String} template
  * @param {Node} el
@@ -8,9 +6,10 @@ const renderTempate = (template, el = document.body) => {
   el.insertAdjacentHTML(`beforeend`, template);
 };
 /**
- * @param {Number} num
+ * @param {Number} maxNum
+ * @param {Number} minNum
  * @return {Number}
  */
-const getRndInteger = () => Math.floor(Math.random() * (MAX_NUM - MIN_NUM)) + MIN_NUM;
+const getRndInteger = (maxNum, minNum) => Math.floor(Math.random() * (maxNum - minNum)) + minNum;
 
 export {renderTempate, getRndInteger};
