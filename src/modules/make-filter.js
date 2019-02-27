@@ -1,10 +1,14 @@
 /**
- * @param {Object} filter
+ * @param {String} caption
+ * @param {String} href
+ * @param {Number} amount
+ * @param {Boolean} isActive
+ * @param {Boolean} isAdditional
  * @return {String}
  */
-export default (filter) => {
+export default (caption, href = caption, amount, isActive = false, isAdditional = false) => {
   return `
-    <a href="#${filter.href().toLowerCase()}" class="main-navigation__item ${filter.isActive ? `main-navigation__item--active` : ``} ${filter.isAdditional ? `main-navigation__item--additional` : ``}">${filter.caption}
-      ${filter.amount ? `<span class="main-navigation__item-count">${filter.amount}</span>` : `` }
+    <a href="#${href.toLowerCase()}" class="main-navigation__item ${isActive ? `main-navigation__item--active` : ``} ${isAdditional ? `main-navigation__item--additional` : ``}">${caption}
+      ${amount ? `<span class="main-navigation__item-count">${amount}</span>` : `` }
     </a>`;
 };

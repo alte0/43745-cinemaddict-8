@@ -13,9 +13,7 @@ module.exports = {
       errors: true
     },
     contentBase: path.join(__dirname, `public`),
-    // publicPath: `http://localhost:8080/`,
-    watchContentBase: true,
-    port: 3000,
+    publicPath: `http://localhost:8080/`,
     hot: true,
     compress: true
   }
