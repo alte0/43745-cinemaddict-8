@@ -1,9 +1,11 @@
-import {getRndInteger} from './util';
+import {getRndInteger, getRandomBoolean} from './util';
 
 const MIN_NUM = 0;
-const maxNums = [3, 4, 5, 6, 7, 14];
+const maxNums = [2, 3, 4, 5, 6, 13];
+const cards = [];
+let i = 0;
 
-export const filters = [
+const filters = [
   {
     caption: `All movies`,
     href() {
@@ -40,7 +42,7 @@ export const filters = [
     isAdditional: true
   },
 ];
-export const card = () => ({
+const card = () => ({
   name: [
     `Love and pigeons`,
     `Ivan Vasilyevich changes profession`,
@@ -93,5 +95,15 @@ export const card = () => ({
     `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.Sed sed nisi sed augue convallis suscipit in sed felis.`,
     `Aliquam erat volutpat.Nunc fermentum tortor ac porta dapibus.In rutrum ac purus sit amet tempus.`
   ][getRndInteger(MIN_NUM, maxNums[0])],
-  amountComments: [0, 2, 5, 8, 13][getRndInteger(MIN_NUM, maxNums[2])]
+  amountComments: [0, 2, 5, 8, 13][getRndInteger(MIN_NUM, maxNums[2])],
+  watchlist: getRandomBoolean(),
+  watched: getRandomBoolean(),
+  favorite: getRandomBoolean(),
 });
+
+while (i < 8) {
+  cards.push(card());
+  i++;
+}
+
+export {filters, cards};
