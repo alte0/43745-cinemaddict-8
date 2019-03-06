@@ -75,13 +75,12 @@ const card = () => ({
   ][getRndInteger(MIN_NUM, maxNums[1])],
   genre: [
     `Comedy`,
-    `Militant`,
     `Thriller`,
     `Fantasy`,
     `Drama`,
     `Horror`,
     `Animation`
-  ][getRndInteger(MIN_NUM, maxNums[4])],
+  ],
   imgSource: [
     `accused.jpg`,
     `blackmail.jpg`,
@@ -106,4 +105,4 @@ while (i < 8) {
   i++;
 }
 
-export {filters, cards};
+export {filters, card, cards};

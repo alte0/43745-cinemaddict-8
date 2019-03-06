@@ -1,13 +1,13 @@
 /**
  * @param {String} template
- * @param {Node} el
+ * @param {HTMLElement} el
  */
 const renderTempate = (template, el = document.body) => {
   el.insertAdjacentHTML(`beforeend`, template);
 };
 /**
  * @param {Array} arr
- * @param {Node} el
+ * @param {HTMLElement} el
  * @param {Function} fn
  */
 const renderData = (arr, el, fn) => {
@@ -20,10 +20,17 @@ const renderData = (arr, el, fn) => {
   renderTempate(template, el);
 };
 /**
- * @param {Node} el
+ * @param {HTMLElement} el
  */
 const clearChildEl = (el) => {
   el.innerHTML = ``;
+};
+/**
+ * @param {HTMLElement} container
+ * @param {HTMLElement} deleteElement
+ */
+const deleteEl = (container, deleteElement) => {
+  container.removeChild(deleteElement);
 };
 /**
  * @param {Number} min
@@ -50,5 +57,14 @@ const randomOrderInArrayAndSplice = (arr, isTwo = false) => {
     return copyArr;
   }
 };
+/**
+ * @param {String} template
+ * @return {HTMLElement} HTMLElement
+ */
+const createElement = (template) => {
+  const wrapperTemplate = document.createElement(`div`);
+  wrapperTemplate.innerHTML = template;
+  return wrapperTemplate.firstChild;
+};
 
-export {getRndInteger, clearChildEl, renderData, getRandomBoolean, randomOrderInArrayAndSplice};
+export {getRndInteger, clearChildEl, renderData, getRandomBoolean, randomOrderInArrayAndSplice, createElement, deleteEl};
