@@ -1,6 +1,6 @@
-import {renderData, clearChildEl, deleteEl} from './modules/util';
+import {renderData, renderCardsDatafromClass, randomOrderInArrayAndSplice, clearChildEl, deleteEl} from './modules/util';
 import getFilter from './modules/make-filter';
-import {filters, card} from './modules/data';
+import {filters, cards} from './modules/data';
 import Card from './clases/card';
 import CardExtra from './clases/card-extra';
 import PopapCard from './clases/popup-card';
@@ -11,10 +11,6 @@ const FILMS_CARDS_CONTAINER = BODY.querySelector(`.films .films-list .films-list
 const FILMS_CARDS_EXTRAS = BODY.querySelectorAll(`.films .films-list--extra`);
 const FILMS_CARDS_EXTRA_TOP = FILMS_CARDS_EXTRAS[0].querySelector(`.films-list__container`);
 const FILMS_CARDS_EXTRA_MOST = FILMS_CARDS_EXTRAS[1].querySelector(`.films-list__container`);
-const cardData = card();
-const firstCard = new Card(cardData);
-const firstCardExtra = new CardExtra(card());
-const firstCardMost = new CardExtra(card());
 
 const renderFilters = renderData;
 
@@ -32,15 +28,11 @@ const navClickHandler = (evt) => {
     clearChildEl(FILMS_CARDS_CONTAINER);
 
     if (href === `#all`) {
-      const firstCard2 = new Card(card());
-      firstCard2.render(FILMS_CARDS_CONTAINER);
-      firstCard2.popupOpen = popupOpen;
+      renderCardsDatafromClass(cards, FILMS_CARDS_CONTAINER, Card, detailOpen);
     } else if (href === `#stats`) {
       return;
     } else {
-      const firstCard3 = new Card(card());
-      firstCard3.render(FILMS_CARDS_CONTAINER);
-      firstCard3.popupOpen = popupOpen;
+      renderCardsDatafromClass(randomOrderInArrayAndSplice(cards), FILMS_CARDS_CONTAINER, Card, detailOpen);
     }
   } else {
     evt.preventDefault();
@@ -51,23 +43,17 @@ const popupClose = () => {
   deleteEl(BODY, BODY.querySelector(`.film-details`));
 };
 
-const popupOpen = () => {
+const detailOpen = (dataPopup) => {
   if (!document.body.querySelector(`.film-details`)) {
-    const popapCard = new PopapCard(cardData);
+    const popapCard = new PopapCard(dataPopup);
     popapCard.render(BODY);
     popapCard.popupClose = popupClose;
   }
 };
 
 renderFilters(filters, MAIN_NAV, getFilter);
-
-firstCard.render(FILMS_CARDS_CONTAINER);
-firstCard.popupOpen = popupOpen;
-
-firstCardExtra.render(FILMS_CARDS_EXTRA_TOP);
-firstCardExtra.popupOpen = popupOpen;
-
-firstCardMost.render(FILMS_CARDS_EXTRA_MOST);
-firstCardMost.popupOpen = popupOpen;
+renderCardsDatafromClass(cards, FILMS_CARDS_CONTAINER, Card, detailOpen);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), FILMS_CARDS_EXTRA_TOP, CardExtra, detailOpen);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), FILMS_CARDS_EXTRA_MOST, CardExtra, detailOpen);
 
 MAIN_NAV.addEventListener(`click`, navClickHandler);

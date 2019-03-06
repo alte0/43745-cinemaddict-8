@@ -22,8 +22,8 @@ export default class CardCommon {
     throw new Error(`Template is required`);
   }
 
-  set popupOpen(fn) {
-    this.openPopup = fn;
+  set popupOpen(cb) {
+    this.openPopup = cb;
   }
 
   _onButtonClick() {

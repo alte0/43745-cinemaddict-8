@@ -20,6 +20,22 @@ const renderData = (arr, el, fn) => {
   renderTempate(template, el);
 };
 /**
+ * @param {Array} arr
+ * @param {HTMLElement} el
+ * @param {Function} Fn
+ * @param {Function} fnPopup
+ */
+const renderCardsDatafromClass = (arr, el, Fn, fnPopup) => {
+  for (const data of arr) {
+    const card = new Fn(data);
+
+    card.popupOpen = () => {
+      fnPopup(data);
+    };
+    card.render(el);
+  }
+};
+/**
  * @param {HTMLElement} el
  */
 const clearChildEl = (el) => {
@@ -50,12 +66,12 @@ const randomOrderInArrayAndSplice = (arr, isTwo = false) => {
   copyArr.sort((a, b) => a.name.length > b.name.length);
 
   if (isTwo) {
-    return copyArr.slice(0, 2);
+    copyArr.splice(2);
   } else {
     const randomNum = Math.random() * copyArr.length - 1;
     copyArr.splice(0, randomNum);
-    return copyArr;
   }
+  return copyArr;
 };
 /**
  * @param {String} template
@@ -67,4 +83,4 @@ const createElement = (template) => {
   return wrapperTemplate.firstChild;
 };
 
-export {getRndInteger, clearChildEl, renderData, getRandomBoolean, randomOrderInArrayAndSplice, createElement, deleteEl};
+export {getRndInteger, clearChildEl, renderData, renderCardsDatafromClass, getRandomBoolean, randomOrderInArrayAndSplice, createElement, deleteEl};
