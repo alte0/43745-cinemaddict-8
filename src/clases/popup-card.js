@@ -1,7 +1,10 @@
-import {createElement} from '../modules/util';
+import Component from "./сomponent";
+import {createElement} from "../modules/util";
 
-export default class PopapCard {
+export default class PopapCard extends Component {
   constructor(data) {
+    super();
+
     this._name = data.name;
     this._rating = data.rating;
     this._year = data.year;
@@ -12,7 +15,7 @@ export default class PopapCard {
     this._amountComments = data.amountComments;
     this._genre = data.genre;
 
-    this._element = null;
+    this._onButtonClick = this._onButtonClick.bind(this);
   }
 
   get template() {
@@ -24,7 +27,9 @@ export default class PopapCard {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="images/posters/${this._imgSource}" alt="${this._name}">
+              <img class="film-details__poster-img" src="images/posters/${
+  this._imgSource
+}" alt="${this._name}">
               <p class="film-details__age">18+</p>
             </div>
 
@@ -69,7 +74,11 @@ export default class PopapCard {
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
                   <td class="film-details__cell">
-                    ${ Array.from(this._genre).map((genre) => (`<span class="film-details__genre">${genre}</span>`.trim())).join(``)}
+                    ${Array.from(this._genre)
+                      .map((genre) =>
+                        `<span class="film-details__genre">${genre}</span>`.trim()
+                      )
+                      .join(``)}
                 </tr>
               </table>
 
@@ -136,7 +145,9 @@ export default class PopapCard {
 
             <div class="film-details__user-score">
               <div class="film-details__user-rating-poster">
-                <img src="images/posters/${this._imgSource}" alt="${this._name}" class="film-details__user-rating-img">
+                <img src="images/posters/${this._imgSource}" alt="${
+  this._name
+}" class="film-details__user-rating-img">
               </div>
 
               <section class="film-details__user-rating-inner">
@@ -201,6 +212,14 @@ export default class PopapCard {
   }
 
   bind() {
-    this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onButtonClick.bind(this));
+    this._element
+      .querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, this._onButtonClick);
+  }
+
+  unbind() {
+    this._element
+      .querySelector(`.film-details__close-btn`)
+      .removeEventListener(`click`, this._onButtonClick);
   }
 }
