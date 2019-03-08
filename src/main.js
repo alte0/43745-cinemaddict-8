@@ -1,46 +1,18 @@
-import {renderTempate, getRndInteger} from './modules/util';
+import {renderData, renderCardsDatafromClass, randomOrderInArrayAndSplice, clearChildEl, deleteEl} from './modules/util';
 import getFilter from './modules/make-filter';
-import getCard from './modules/make-card';
-import getCardExtra from './modules/make-card-extra';
-import {filters, card} from './modules/data';
+import {filters, cards} from './modules/data';
+import Card from './clases/card';
+import CardExtra from './clases/card-extra';
+import PopapCard from './clases/popup-card';
 
-const MAX_NUM = 7;
-const MIN_NUM = 1;
-const HOW_MUCH_RENDER_DEFAULT_CARDS = 7;
-const HOW_MUCH_RENDER_CARDS_EXTRA = 2;
-const MAIN_NAV = document.querySelector(`.main-navigation`);
-const FILMS_CARDS_CONTAINER = document.querySelector(`.films-list .films-list__container`);
-const FILMS_CARDS_EXTRAS = document.querySelectorAll(`.films-list--extra`);
+const BODY = document.body;
+const MAIN_NAV = BODY.querySelector(`.main-navigation`);
+const FILMS_CARDS_CONTAINER = BODY.querySelector(`.films .films-list .films-list__container`);
+const FILMS_CARDS_EXTRAS = BODY.querySelectorAll(`.films .films-list--extra`);
 const FILMS_CARDS_EXTRA_TOP = FILMS_CARDS_EXTRAS[0].querySelector(`.films-list__container`);
 const FILMS_CARDS_EXTRA_MOST = FILMS_CARDS_EXTRAS[1].querySelector(`.films-list__container`);
 
-/**
- * @param {Array} arr
- * @param {Node} el
- * @param {Function} fn
- */
-const renderFilters = (arr, el, fn) => {
-  let template = ``;
-
-  for (const item of arr) {
-    template = template + fn(item);
-  }
-
-  renderTempate(template, el);
-};
-/**
- * @param {Number} howMuchToRender
- * @param {Node} el
- * @param {Function} fn
- */
-const renderCards = (howMuchToRender, el, fn) => {
-  const template = new Array(howMuchToRender)
-    .fill(``)
-    .map(() => fn(card()))
-    .join(``);
-
-  renderTempate(template, el);
-};
+const renderFilters = renderData;
 
 const navClickHandler = (evt) => {
   const target = evt.target;
@@ -49,27 +21,39 @@ const navClickHandler = (evt) => {
     const NAV_ITEMS = MAIN_NAV.querySelectorAll(`.main-navigation__item`);
     const href = target.getAttribute(`href`);
 
-    NAV_ITEMS.forEach((item) => {
-      item.classList.remove(`main-navigation__item--active`);
-    });
+    for (const nav of NAV_ITEMS) {
+      nav.classList.remove(`main-navigation__item--active`);
+    }
     target.classList.add(`main-navigation__item--active`);
-    FILMS_CARDS_CONTAINER.innerHTML = ``;
+    clearChildEl(FILMS_CARDS_CONTAINER);
 
     if (href === `#all`) {
-      renderCards(HOW_MUCH_RENDER_DEFAULT_CARDS, FILMS_CARDS_CONTAINER, getCard);
+      renderCardsDatafromClass(cards, FILMS_CARDS_CONTAINER, Card, detailOpen);
     } else if (href === `#stats`) {
       return;
     } else {
-      renderCards(getRndInteger(MIN_NUM, MAX_NUM), FILMS_CARDS_CONTAINER, getCard);
+      renderCardsDatafromClass(randomOrderInArrayAndSplice(cards), FILMS_CARDS_CONTAINER, Card, detailOpen);
     }
   } else {
     evt.preventDefault();
   }
 };
 
+const popupClose = () => {
+  deleteEl(BODY, BODY.querySelector(`.film-details`));
+};
+
+const detailOpen = (dataPopup) => {
+  if (!document.body.querySelector(`.film-details`)) {
+    const popapCard = new PopapCard(dataPopup);
+    popapCard.render(BODY);
+    popapCard.popupClose = popupClose;
+  }
+};
+
 renderFilters(filters, MAIN_NAV, getFilter);
-renderCards(HOW_MUCH_RENDER_DEFAULT_CARDS, FILMS_CARDS_CONTAINER, getCard);
-renderCards(HOW_MUCH_RENDER_CARDS_EXTRA, FILMS_CARDS_EXTRA_TOP, getCardExtra);
-renderCards(HOW_MUCH_RENDER_CARDS_EXTRA, FILMS_CARDS_EXTRA_MOST, getCardExtra);
+renderCardsDatafromClass(cards, FILMS_CARDS_CONTAINER, Card, detailOpen);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), FILMS_CARDS_EXTRA_TOP, CardExtra, detailOpen);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), FILMS_CARDS_EXTRA_MOST, CardExtra, detailOpen);
 
 MAIN_NAV.addEventListener(`click`, navClickHandler);
