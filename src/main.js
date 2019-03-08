@@ -13,14 +13,16 @@ import PopapCard from "./clases/popup-card";
 
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
-const filmmsCardsContainer = body.querySelector(
+const filmsCardsContainer = body.querySelector(
     `.films .films-list .films-list__container`
 );
-const filmmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
-const filmmsCardsContainerExtraTop = filmmsCardsContainerExtras[0].querySelector(
+const filmsCardsContainerExtras = body.querySelectorAll(
+    `.films .films-list--extra`
+);
+const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(
     `.films-list__container`
 );
-const filmmsCardsContainerExtraMost = filmmsCardsContainerExtras[1].querySelector(
+const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(
     `.films-list__container`
 );
 
@@ -28,25 +30,26 @@ const renderFilters = renderData;
 
 const navClickHandler = (evt) => {
   const target = evt.target;
+  const targetTagName = target.tagName;
 
-  if (target.tagName === `A`) {
+  if (targetTagName === `A` && !target.classList.contains(`main-navigation__item--active`)) {
     const navItems = mainNav.querySelectorAll(`.main-navigation__item`);
     const href = target.getAttribute(`href`);
 
-    for (const nav of navItems) {
-      nav.classList.remove(`main-navigation__item--active`);
+    for (const navItem of navItems) {
+      navItem.classList.remove(`main-navigation__item--active`);
     }
     target.classList.add(`main-navigation__item--active`);
-    clearChildEl(filmmsCardsContainer);
+    clearChildEl(filmsCardsContainer);
 
     if (href === `#all`) {
-      renderCardsDatafromClass(cards, filmmsCardsContainer, Card, detailOpen);
+      renderCardsDatafromClass(cards, filmsCardsContainer, Card, detailOpen);
     } else if (href === `#stats`) {
       return;
     } else {
       renderCardsDatafromClass(
           randomOrderInArrayAndSplice(cards),
-          filmmsCardsContainer,
+          filmsCardsContainer,
           Card,
           detailOpen
       );
@@ -69,16 +72,16 @@ const detailOpen = (dataPopup) => {
 };
 
 renderFilters(filters, mainNav, getFilter);
-renderCardsDatafromClass(cards, filmmsCardsContainer, Card, detailOpen);
+renderCardsDatafromClass(cards, filmsCardsContainer, Card, detailOpen);
 renderCardsDatafromClass(
     randomOrderInArrayAndSplice(cards, true),
-    filmmsCardsContainerExtraTop,
+    filmsCardsContainerExtraTop,
     CardExtra,
     detailOpen
 );
 renderCardsDatafromClass(
     randomOrderInArrayAndSplice(cards, true),
-    filmmsCardsContainerExtraMost,
+    ffilmsCardsContainerExtraMost,
     CardExtra,
     detailOpen
 );
