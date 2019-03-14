@@ -1,4 +1,4 @@
-import {getRndInteger, getRandomBoolean} from './util';
+import {getRndInteger, getRandomBoolean} from "./util";
 
 const MIN_NUM = 0;
 const maxNums = [2, 3, 4, 5, 6, 13];
@@ -11,7 +11,7 @@ const filters = [
     href() {
       return `ALL`;
     },
-    isActive: true,
+    isActive: true
   },
   {
     caption: `Watchlist`,
@@ -40,7 +40,7 @@ const filters = [
       return this.caption;
     },
     isAdditional: true
-  },
+  }
 ];
 const card = () => ({
   name: [
@@ -58,36 +58,29 @@ const card = () => ({
     `Lord of the rings: Return of the King`,
     `Back to the future`,
     `Cards, money, two barrels`,
-    `Diamond hand`,
+    `Diamond hand`
   ][getRndInteger(MIN_NUM, maxNums[5])],
-  rating: [
-    `9.8`,
-    `10.0`,
-    `5.6`,
-    `7.7`
-  ][getRndInteger(MIN_NUM, maxNums[1])],
-  year: [2018, 2006, 2000][getRndInteger(MIN_NUM, maxNums[0])],
+  yearManufacture: [
+    +new Date(2018, 10, 5),
+    +new Date(2006, 3, 25),
+    +new Date(2000, 5, 15)
+  ][getRndInteger(MIN_NUM, maxNums[0])],
+  rating: [`9.8`, `10.0`, `5.6`, `7.7`][getRndInteger(MIN_NUM, maxNums[1])],
+  ratingUser: `-`,
   duration: [
-    `1h 13m`,
-    `1h 26m`,
-    `1h 06m`,
-    `1h 30m`
+    {hours: 1, minutes: 13},
+    {hours: 1, minutes: 6},
+    {hours: 1, minutes: 30},
+    {hours: 0, minutes: 30}
   ][getRndInteger(MIN_NUM, maxNums[1])],
-  genre: [
-    `Comedy`,
-    `Thriller`,
-    `Fantasy`,
-    `Drama`,
-    `Horror`,
-    `Animation`
-  ],
+  genre: [`Comedy`, `Thriller`, `Fantasy`, `Drama`, `Horror`, `Animation`],
   imgSource: [
     `accused.jpg`,
     `blackmail.jpg`,
     `blue-blazes.jpg`,
     `fuga-da-new-york.jpg`,
     `moonrise.jpg`,
-    `three-friends.jpg`,
+    `three-friends.jpg`
   ][getRndInteger(MIN_NUM, maxNums[3])],
   description: [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.Cras aliquet varius magna, non porta ligula feugiat eget.Fusce tristique felis at fermentum pharetra.Aliquam id orci ut lectus varius viverra.`,
@@ -95,9 +88,21 @@ const card = () => ({
     `Aliquam erat volutpat.Nunc fermentum tortor ac porta dapibus.In rutrum ac purus sit amet tempus.`
   ][getRndInteger(MIN_NUM, maxNums[0])],
   amountComments: [0, 2, 5, 8, 13][getRndInteger(MIN_NUM, maxNums[2])],
+  comments: [
+    {
+      textComment: `So long-long story, boring!`,
+      author: `Tim Macoveev`,
+      commentDay: new Date(2019, 2, 1)
+    }
+  ],
+  country: [`usa`, `Russia`, `german`, `USSR`][
+    getRndInteger(MIN_NUM, maxNums[1])
+  ],
+  ageLimit: [18, 16, 14, 12][getRndInteger(MIN_NUM, maxNums[1])],
+  cast: [`Samuel L.Jackson`, `Catherine Keener`, `Sophia Bush`],
   watchlist: getRandomBoolean(),
   watched: getRandomBoolean(),
-  favorite: getRandomBoolean(),
+  favorite: getRandomBoolean()
 });
 
 while (i < 8) {

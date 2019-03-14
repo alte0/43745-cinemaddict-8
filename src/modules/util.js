@@ -26,11 +26,19 @@ const renderData = (arr, el, fn) => {
  * @param {Function} fnPopup
  */
 const renderCardsDatafromClass = (arr, el, Fn, fnPopup) => {
-  for (const data of arr) {
-    const card = new Fn(data);
+  for (const dataCard of arr) {
+    const card = new Fn(dataCard);
 
     card.popupOpen = () => {
-      fnPopup(data);
+    // card.popupOpen = (newObject) => {
+    //   dataCard.ratingUser = newObject.ratingUser;
+    //   dataCard.watchlist = newObject.watchlist;
+    //   dataCard.watched = newObject.watched;
+    //   dataCard.favorite = newObject.favorite;
+      // dataCard.comments = newObject.comments;
+
+      fnPopup(dataCard);
+      // fnPopup.update(dataCard);
     };
     card.render(el);
   }
@@ -53,7 +61,8 @@ const deleteEl = (container, deleteElement) => {
  * @param {Number} max
  * @return {Number}
  */
-const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getRndInteger = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
 const getRandomBoolean = () => Math.random() >= 0.5;
 /**
  * @param {Array} arr
@@ -83,4 +92,13 @@ const createElement = (template) => {
   return wrapperTemplate.firstChild;
 };
 
-export {getRndInteger, clearChildEl, renderData, renderCardsDatafromClass, getRandomBoolean, randomOrderInArrayAndSplice, createElement, deleteEl};
+export {
+  getRndInteger,
+  clearChildEl,
+  renderData,
+  renderCardsDatafromClass,
+  getRandomBoolean,
+  randomOrderInArrayAndSplice,
+  createElement,
+  deleteEl
+};

@@ -1,4 +1,5 @@
 import Component from "./сomponent";
+import moment from "moment";
 import {createElement} from "../modules/util";
 
 export default class PopapCard extends Component {
@@ -7,15 +8,29 @@ export default class PopapCard extends Component {
 
     this._name = data.name;
     this._rating = data.rating;
-    this._year = data.year;
-    this._duration = data.duration;
+    this._ratingUser = data.ratingUser;
+    this._yearManufacture = data.yearManufacture;
+    this._releaseDate = moment(this._yearManufacture).isValid()
+      ? moment(this._yearManufacture).format(`D MMMM YYYY`)
+      : ``;
+    this._year = moment(this._yearManufacture).isValid()
+      ? moment(this._yearManufacture).format(`YYYY`)
+      : ``;
+    this._duration = moment.duration(data.duration).asMinutes();
     this._genre = data.genre;
     this._imgSource = data.imgSource;
     this._description = data.description;
-    this._amountComments = data.amountComments;
+    this._comments = data.comments;
     this._genre = data.genre;
+    this._ageLimit = data.ageLimit;
+    this._cast = data.cast;
+    this._country = data.country;
+    this._watchlist = data.watchlist;
+    this._watched = data.watched;
+    this._favorite = data.favorite;
 
     this._onButtonClick = this._onButtonClick.bind(this);
+    this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
   }
 
   get template() {
@@ -30,19 +45,23 @@ export default class PopapCard extends Component {
               <img class="film-details__poster-img" src="images/posters/${
   this._imgSource
 }" alt="${this._name}">
-              <p class="film-details__age">18+</p>
+              <p class="film-details__age">${this._ageLimit}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${this._name}</h3>
-                  <p class="film-details__title-original">Original: Невероятная семейка</p>
+                  <p class="film-details__title-original">Original: ${
+  this._name
+}</p>
                 </div>
 
                 <div class="film-details__rating">
                   <p class="film-details__total-rating">${this._rating}</p>
-                  <p class="film-details__user-rating">Your rate 8</p>
+                  <p class="film-details__user-rating">Your rate ${
+  this._ratingUser
+}</p>
                 </div>
               </div>
 
@@ -57,19 +76,26 @@ export default class PopapCard extends Component {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">Samuel L. Jackson, Catherine Keener, Sophia Bush</td>
-                </tr>
+                  <td class="film-details__cell">${Array.from(this._cast)
+                    .map((actor, index) =>
+                      this._cast.length - 1 === index
+                        ? `${actor}`
+                        : `${actor}, `
+                    )
+                    .join(``)}</td>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">15 June 2018 (USA)</td>
+                  <td class="film-details__cell">${
+  this._releaseDate
+} (${this._country.toUpperCase()})</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">118 min</td>
+                  <td class="film-details__cell">${this._duration} min</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">USA</td>
+                  <td class="film-details__cell">${this._country.toUpperCase()}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
@@ -89,30 +115,48 @@ export default class PopapCard extends Component {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${
+  this._watchlist ? `checked` : ``
+}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"  ${
+  this._watched ? `checked` : ``
+}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${
+  this._favorite ? `checked` : ``
+}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
 
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">1</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${
+  this._comments.length
+}</span></h3>
 
             <ul class="film-details__comments-list">
-              <li class="film-details__comment">
-                <span class="film-details__comment-emoji">😴</span>
-                <div>
-                  <p class="film-details__comment-text">So long-long story, boring!</p>
-                  <p class="film-details__comment-info">
-                    <span class="film-details__comment-author">Tim Macoveev</span>
-                    <span class="film-details__comment-day">3 days ago</span>
-                  </p>
-                </div>
-              </li>
+              ${Array.from(this._comments)
+                .map((comment) =>
+                  `<li class="film-details__comment">
+                  <span class="film-details__comment-emoji">😴</span>
+                  <div>
+                    <p class="film-details__comment-text">${
+  comment.textComment
+}</p>
+                    <p class="film-details__comment-info">
+                      <span class="film-details__comment-author">${
+  comment.author
+}</span>
+                      <span class="film-details__comment-day">${moment(
+      comment.commentDay
+  ).fromNow()}</span>
+                    </p>
+                  </div>
+                </li>`.trim()
+                )
+                .join(``)}
             </ul>
 
             <div class="film-details__new-comment">
@@ -168,7 +212,7 @@ export default class PopapCard extends Component {
                   <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
                   <label class="film-details__user-rating-label" for="rating-4">4</label>
 
-                  <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5" checked>
+                  <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5">
                   <label class="film-details__user-rating-label" for="rating-5">5</label>
 
                   <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
@@ -196,7 +240,23 @@ export default class PopapCard extends Component {
   }
 
   _onButtonClick() {
+    const formData = new FormData(
+        this._element.querySelector(`.film-details__inner`)
+    );
+    const newData = this._processForm(formData);
+    // if (typeof this._onSubmit === `function`) {
+    //   this._onSubmit(newData);
+    // }
+    this.update(newData);
     this.closePopup();
+  }
+
+  _onChangeRatingClick(evt) {
+    const target = evt.target;
+    const userRating = this._element.querySelector(
+        `.film-details__user-rating`
+    );
+    userRating.textContent = `Your rate ${target.value}`;
   }
 
   render(container) {
@@ -215,11 +275,62 @@ export default class PopapCard extends Component {
     this._element
       .querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, this._onButtonClick);
+    this._element
+      .querySelector(`.film-details__user-rating-score`)
+      .addEventListener(`change`, this._onChangeRatingClick);
   }
 
   unbind() {
     this._element
       .querySelector(`.film-details__close-btn`)
       .removeEventListener(`click`, this._onButtonClick);
+    this._element
+      .querySelector(`.film-details__user-rating-score`)
+      .removeEventListener(`change`, this._onChangeRatingClick);
+  }
+
+  update(data) {
+    // console.log(data);
+    this._ratingUser = data.ratingUser;
+    this._watchlist = data.watchlist;
+    this._watched = data.watched;
+    this._favorite = data.favorite;
+    // this._comments = data.comments;
+  }
+
+  _processForm(formData) {
+    const entry = {
+      watchlist: false,
+      watched: false,
+      favorite: false,
+      comments: {
+        textComment: ``,
+        author: `User`,
+        commentDay: new Date()
+      },
+      ratingUser: `-`
+    };
+
+    const popapCardEditMapper = PopapCard.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      const [key, value] = pair;
+
+      if (popapCardEditMapper[key] && popapCardEditMapper[key](value)) {
+        popapCardEditMapper[key](value);
+      }
+    }
+
+    return entry;
+  }
+
+  static createMapper(target) {
+    return {
+      score: (value) => (target.ratingUser = value),
+      watchlist: (value) => (target.watchlist = value === `on`),
+      watched: (value) => (target.watched = value === `on`),
+      favorite: (value) => (target.favorite = value === `on`),
+      comment: (value) => (target.comments.textComment = value)
+    };
   }
 }

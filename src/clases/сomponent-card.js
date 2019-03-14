@@ -1,4 +1,5 @@
 import Component from "./сomponent";
+import moment from "moment";
 import {createElement} from "../modules/util";
 
 export default class ComponentCard extends Component {
@@ -13,8 +14,10 @@ export default class ComponentCard extends Component {
 
     this._name = data.name;
     this._rating = data.rating;
-    this._year = data.year;
-    this._duration = data.duration;
+    this._ratingUser = data.ratingUser;
+    this._yearManufacture = data.yearManufacture;
+    this._year = moment(this._yearManufacture).isValid() ? moment(this._yearManufacture).format(`YYYY`) : ``;
+    this._duration = moment.duration(data.duration).hours() + ` h ` + moment.duration(data.duration).minutes() + ` m`;
     this._genre = data.genre;
     this._imgSource = data.imgSource;
     this._description = data.description;
