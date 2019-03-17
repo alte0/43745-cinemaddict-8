@@ -45,7 +45,6 @@ export default class ComponentCard extends Component {
   }
 
   _partialUpdate() {
-    console.log(`_partialUpdate`);
     const btnCommentOpen = this._element.querySelector(`.film-card__comments`);
     const parent = btnCommentOpen.parentElement;
     const prevElemBtnCommentOpen = btnCommentOpen.previousElementSibling;
