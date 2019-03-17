@@ -22,25 +22,36 @@ const renderData = (arr, el, fn) => {
 /**
  * @param {Array} arr
  * @param {HTMLElement} el
- * @param {Function} Fn
- * @param {Function} fnPopup
+ * @param {Function} ClsCard
+ * @param {Function} ClsPopup
  */
-const renderCardsDatafromClass = (arr, el, Fn, fnPopup) => {
+const renderCardsDatafromClass = (arr, el, ClsCard, ClsPopup) => {
+  const body = document.body;
+
   for (const dataCard of arr) {
-    const card = new Fn(dataCard);
-
-    card.popupOpen = () => {
-    // card.popupOpen = (newObject) => {
-    //   dataCard.ratingUser = newObject.ratingUser;
-    //   dataCard.watchlist = newObject.watchlist;
-    //   dataCard.watched = newObject.watched;
-    //   dataCard.favorite = newObject.favorite;
-      // dataCard.comments = newObject.comments;
-
-      fnPopup(dataCard);
-      // fnPopup.update(dataCard);
+    const card = new ClsCard(dataCard);
+    const popupCard = new ClsPopup(dataCard);
+    const popupOpen = () => {
+      popupCard.render(body);
     };
-    card.render(el);
+    popupCard.closePopup = () => {
+      popupCard.unrender();
+    };
+    card.popupOpen = popupOpen;
+
+    popupCard.onChangeFormData = (newObject) => {
+      dataCard.ratingUser = newObject.ratingUser;
+      dataCard.watchlist = newObject.watchlist;
+      dataCard.watched = newObject.watched;
+      dataCard.favorite = newObject.favorite;
+      dataCard.comments = newObject.comments;
+
+      card.update(dataCard);
+      card.unbind();
+      card.bind();
+    };
+
+    el.appendChild(card.render());
   }
 };
 /**

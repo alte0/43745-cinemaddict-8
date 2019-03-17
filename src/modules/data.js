@@ -87,12 +87,12 @@ const card = () => ({
     `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.Sed sed nisi sed augue convallis suscipit in sed felis.`,
     `Aliquam erat volutpat.Nunc fermentum tortor ac porta dapibus.In rutrum ac purus sit amet tempus.`
   ][getRndInteger(MIN_NUM, maxNums[0])],
-  amountComments: [0, 2, 5, 8, 13][getRndInteger(MIN_NUM, maxNums[2])],
   comments: [
     {
       textComment: `So long-long story, boring!`,
       author: `Tim Macoveev`,
-      commentDay: new Date(2019, 2, 1)
+      commentDay: new Date(2019, 2, 1),
+      emmojiName: `sleeping`
     }
   ],
   country: [`usa`, `Russia`, `german`, `USSR`][

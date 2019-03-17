@@ -2,6 +2,37 @@ import Component from "./сomponent";
 import moment from "moment";
 import {createElement} from "../modules/util";
 
+const EMOJIS = {
+  "sleeping": `😴`,
+  "neutral-face": `😐`,
+  "grinning": `😀`,
+};
+const Keycode = {
+  KEYCODE_ENTER: 13,
+  KEYCODE_ESC: 27,
+};
+
+/**
+ * @param {Array} arr
+ * @return {string}
+ */
+const createComments = (arr) => (
+  `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${arr.length}</span></h3><ul class="film-details__comments-list">
+    ${arr.map((comment) => (`
+      <li class="film-details__comment">
+        <span class="film-details__comment-emoji">${EMOJIS[comment.emmojiName] === undefined ? `` : EMOJIS[comment.emmojiName]}</span>
+        <div>
+          <p class="film-details__comment-text">${comment.textComment}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${comment.author}</span>
+            <span class="film-details__comment-day">${moment(comment.commentDay).fromNow()}</span>
+          </p>
+        </div>
+      </li>
+      `).trim()).join(``)}
+  </ul >`
+);
+
 export default class PopapCard extends Component {
   constructor(data) {
     super();
@@ -29,8 +60,16 @@ export default class PopapCard extends Component {
     this._watched = data.watched;
     this._favorite = data.favorite;
 
+    this._onSubmit = null;
+    this._onChangeFormData = null;
+    this._onClosePopup = null;
+
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
+    this._onChangeEmojiClick = this._onChangeEmojiClick.bind(this);
+    this._onKeydownEnter = this._onKeydownEnter.bind(this);
+    this._onChangeControlClick = this._onChangeControlClick.bind(this);
+    this._windowEscKeyDownHander = this._windowEscKeyDownHander.bind(this);
   }
 
   get template() {
@@ -42,9 +81,7 @@ export default class PopapCard extends Component {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="images/posters/${
-  this._imgSource
-}" alt="${this._name}">
+              <img class="film-details__poster-img" src="images/posters/${this._imgSource}" alt="${this._name}">
               <p class="film-details__age">${this._ageLimit}+</p>
             </div>
 
@@ -52,16 +89,12 @@ export default class PopapCard extends Component {
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${this._name}</h3>
-                  <p class="film-details__title-original">Original: ${
-  this._name
-}</p>
+                  <p class="film-details__title-original">Original: ${this._name}</p>
                 </div>
 
                 <div class="film-details__rating">
                   <p class="film-details__total-rating">${this._rating}</p>
-                  <p class="film-details__user-rating">Your rate ${
-  this._ratingUser
-}</p>
+                  <p class="film-details__user-rating">Your rate ${this._ratingUser}</p>
                 </div>
               </div>
 
@@ -85,9 +118,7 @@ export default class PopapCard extends Component {
                     .join(``)}</td>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${
-  this._releaseDate
-} (${this._country.toUpperCase()})</td>
+                  <td class="film-details__cell">${this._releaseDate} (${this._country.toUpperCase()})</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
@@ -115,49 +146,19 @@ export default class PopapCard extends Component {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${
-  this._watchlist ? `checked` : ``
-}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._watchlist ? `checked` : ``}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"  ${
-  this._watched ? `checked` : ``
-}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"  ${this._watched ? `checked` : ``}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${
-  this._favorite ? `checked` : ``
-}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._favorite ? `checked` : ``}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
 
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${
-  this._comments.length
-}</span></h3>
 
-            <ul class="film-details__comments-list">
-              ${Array.from(this._comments)
-                .map((comment) =>
-                  `<li class="film-details__comment">
-                  <span class="film-details__comment-emoji">😴</span>
-                  <div>
-                    <p class="film-details__comment-text">${
-  comment.textComment
-}</p>
-                    <p class="film-details__comment-info">
-                      <span class="film-details__comment-author">${
-  comment.author
-}</span>
-                      <span class="film-details__comment-day">${moment(
-      comment.commentDay
-  ).fromNow()}</span>
-                    </p>
-                  </div>
-                </li>`.trim()
-                )
-                .join(``)}
-            </ul>
+            ${createComments(this._comments)}
 
             <div class="film-details__new-comment">
               <div>
@@ -189,9 +190,7 @@ export default class PopapCard extends Component {
 
             <div class="film-details__user-score">
               <div class="film-details__user-rating-poster">
-                <img src="images/posters/${this._imgSource}" alt="${
-  this._name
-}" class="film-details__user-rating-img">
+                <img src="images/posters/${this._imgSource}" alt="${this._name}" class="film-details__user-rating-img">
               </div>
 
               <section class="film-details__user-rating-inner">
@@ -235,28 +234,76 @@ export default class PopapCard extends Component {
       </section>
     `.trim();
   }
-  set popupClose(fn) {
-    this.closePopup = fn;
+
+  set onChangeFormData(fn) {
+    this._onChangeFormData = fn;
+  }
+
+  set closePopup(fn) {
+    this._onClosePopup = fn;
   }
 
   _onButtonClick() {
-    const formData = new FormData(
-        this._element.querySelector(`.film-details__inner`)
-    );
+    this._onClosePopup();
+  }
+
+  _windowEscKeyDownHander(evt) {
+    if (evt.keyCode === Keycode.KEYCODE_ESC) {
+      this._onButtonClick();
+    }
+  }
+
+  _updateData() {
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     const newData = this._processForm(formData);
-    // if (typeof this._onSubmit === `function`) {
-    //   this._onSubmit(newData);
-    // }
+    const copyCommments = this._comments.slice();
+
+    if (newData.comments.textComment !== ``) {
+      copyCommments.push(newData.comments);
+    }
+    newData.comments = [...copyCommments];
+
+    if (typeof this._onChangeFormData === `function`) {
+      this._onChangeFormData(newData);
+    }
+
     this.update(newData);
-    this.closePopup();
   }
 
   _onChangeRatingClick(evt) {
     const target = evt.target;
-    const userRating = this._element.querySelector(
-        `.film-details__user-rating`
-    );
-    userRating.textContent = `Your rate ${target.value}`;
+    const userRating = this._element.querySelector(`.film-details__user-rating`);
+    const scoreElement = createElement(`<p class="film-details__user-rating">Your rate ${target.value}</p>`);
+    const parentElScoreUSer = userRating.parentElement;
+    parentElScoreUSer.removeChild(userRating);
+    parentElScoreUSer.appendChild(scoreElement);
+
+    this._updateData();
+  }
+
+  _onChangeEmojiClick(evt) {
+    const target = evt.target;
+    const selectEmoji = target.value;
+    const emojiAdd = this._element.querySelector(`.film-details__add-emoji-label`);
+    emojiAdd.textContent = EMOJIS[selectEmoji];
+  }
+
+  _onKeydownEnter(evt) {
+    const keyCode = evt.keyCode;
+    const target = evt.target;
+
+    if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
+      this._updateData();
+      this._partialUpdate();
+      target.value = ``;
+    }
+  }
+
+  _onChangeControlClick(evt) {
+    const target = evt.target;
+    if (target.tagName === `INPUT`) {
+      this._updateData();
+    }
   }
 
   render(container) {
@@ -271,31 +318,70 @@ export default class PopapCard extends Component {
     this.bind();
   }
 
+  unrender() {
+    this.unbind();
+    this._element.remove();
+    this._element = null;
+  }
+
   bind() {
     this._element
       .querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, this._onButtonClick);
+    window
+      .addEventListener(`keydown`, this._windowEscKeyDownHander);
     this._element
       .querySelector(`.film-details__user-rating-score`)
       .addEventListener(`change`, this._onChangeRatingClick);
+    this._element
+      .querySelector(`.film-details__emoji-list`)
+      .addEventListener(`change`, this._onChangeEmojiClick);
+    this._element
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`keydown`, this._onKeydownEnter);
+    this._element
+      .querySelector(`.film-details__controls`)
+      .addEventListener(`click`, this._onChangeControlClick);
   }
 
   unbind() {
     this._element
       .querySelector(`.film-details__close-btn`)
       .removeEventListener(`click`, this._onButtonClick);
+    window
+      .removeEventListener(`keydown`, this._windowEscKeyDownHander);
     this._element
       .querySelector(`.film-details__user-rating-score`)
       .removeEventListener(`change`, this._onChangeRatingClick);
+    this._element
+      .querySelector(`.film-details__emoji-list`)
+      .removeEventListener(`change`, this._onChangeEmojiClick);
+    this._element
+      .querySelector(`.film-details__comment-input`)
+      .removeEventListener(`keydown`, this._onKeydownEnter);
+    this._element
+      .querySelector(`.film-details__controls`)
+      .removeEventListener(`click`, this._onChangeControlClick);
+  }
+
+  _partialUpdate() {
+    const commentsWrap = this._element.querySelector(`.film-details__comments-wrap`);
+    const commentsTitle = this._element.querySelector(`.film-details__comments-title`);
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+
+    commentsWrap.removeChild(commentsTitle);
+    commentsWrap.removeChild(commentsList);
+
+    const newComments = createComments(this._comments);
+    commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
   }
 
   update(data) {
-    // console.log(data);
     this._ratingUser = data.ratingUser;
     this._watchlist = data.watchlist;
     this._watched = data.watched;
     this._favorite = data.favorite;
-    // this._comments = data.comments;
+    this._comments = data.comments;
   }
 
   _processForm(formData) {
@@ -306,7 +392,8 @@ export default class PopapCard extends Component {
       comments: {
         textComment: ``,
         author: `User`,
-        commentDay: new Date()
+        commentDay: new Date(),
+        emmojiName: ``
       },
       ratingUser: `-`
     };
@@ -314,8 +401,10 @@ export default class PopapCard extends Component {
     const popapCardEditMapper = PopapCard.createMapper(entry);
 
     for (const pair of formData.entries()) {
-      const [key, value] = pair;
-
+      let [key, value] = pair;
+      if (key === `comment-emoji`) {
+        key = `commentEmoji`;
+      }
       if (popapCardEditMapper[key] && popapCardEditMapper[key](value)) {
         popapCardEditMapper[key](value);
       }
@@ -330,7 +419,8 @@ export default class PopapCard extends Component {
       watchlist: (value) => (target.watchlist = value === `on`),
       watched: (value) => (target.watched = value === `on`),
       favorite: (value) => (target.favorite = value === `on`),
-      comment: (value) => (target.comments.textComment = value)
+      comment: (value) => (target.comments.textComment = value),
+      commentEmoji: (value) => (target.comments.emmojiName = value)
     };
   }
 }
