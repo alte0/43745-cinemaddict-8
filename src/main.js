@@ -3,13 +3,13 @@ import {
   renderCardsDatafromClass,
   randomOrderInArrayAndSplice,
   clearChildEl,
-  deleteEl
+  // deleteEl
 } from "./modules/util";
 import getFilter from "./modules/make-filter";
 import {filters, cards} from "./modules/data";
 import Card from "./clases/card";
 import CardExtra from "./clases/card-extra";
-import PopapCard from "./clases/popup-card";
+import PopupCard from "./clases/popup-card";
 
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
@@ -43,47 +43,20 @@ const navClickHandler = (evt) => {
     clearChildEl(filmsCardsContainer);
 
     if (href === `#all`) {
-      renderCardsDatafromClass(cards, filmsCardsContainer, Card, detailOpen);
+      renderCardsDatafromClass(cards, filmsCardsContainer, Card, PopupCard);
     } else if (href === `#stats`) {
       return;
     } else {
-      renderCardsDatafromClass(
-          randomOrderInArrayAndSplice(cards),
-          filmsCardsContainer,
-          Card,
-          detailOpen
-      );
+      renderCardsDatafromClass(randomOrderInArrayAndSplice(cards), filmsCardsContainer, Card, PopupCard);
     }
   } else {
     evt.preventDefault();
   }
 };
 
-const popupClose = () => {
-  deleteEl(body, body.querySelector(`.film-details`));
-};
-
-const detailOpen = (dataPopup) => {
-  if (!document.body.querySelector(`.film-details`)) {
-    const popapCard = new PopapCard(dataPopup);
-    popapCard.render(body);
-    popapCard.popupClose = popupClose;
-  }
-};
-
 renderFilters(filters, mainNav, getFilter);
-renderCardsDatafromClass(cards, filmsCardsContainer, Card, detailOpen);
-renderCardsDatafromClass(
-    randomOrderInArrayAndSplice(cards, true),
-    filmsCardsContainerExtraTop,
-    CardExtra,
-    detailOpen
-);
-renderCardsDatafromClass(
-    randomOrderInArrayAndSplice(cards, true),
-    ffilmsCardsContainerExtraMost,
-    CardExtra,
-    detailOpen
-);
+renderCardsDatafromClass(cards, filmsCardsContainer, Card, PopupCard);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+renderCardsDatafromClass(randomOrderInArrayAndSplice(cards, true), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
 
 mainNav.addEventListener(`click`, navClickHandler);

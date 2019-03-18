@@ -22,17 +22,36 @@ const renderData = (arr, el, fn) => {
 /**
  * @param {Array} arr
  * @param {HTMLElement} el
- * @param {Function} Fn
- * @param {Function} fnPopup
+ * @param {Function} ClsCard
+ * @param {Function} ClsPopup
  */
-const renderCardsDatafromClass = (arr, el, Fn, fnPopup) => {
-  for (const data of arr) {
-    const card = new Fn(data);
+const renderCardsDatafromClass = (arr, el, ClsCard, ClsPopup) => {
+  const body = document.body;
 
-    card.popupOpen = () => {
-      fnPopup(data);
+  for (const dataCard of arr) {
+    const card = new ClsCard(dataCard);
+    const popupCard = new ClsPopup(dataCard);
+    const popupOpen = () => {
+      popupCard.render(body);
     };
-    card.render(el);
+    popupCard.closePopup = () => {
+      popupCard.unrender();
+    };
+    card.popupOpen = popupOpen;
+
+    popupCard.onChangeFormData = (newObject) => {
+      dataCard.ratingUser = newObject.ratingUser;
+      dataCard.watchlist = newObject.watchlist;
+      dataCard.watched = newObject.watched;
+      dataCard.favorite = newObject.favorite;
+      dataCard.comments = newObject.comments;
+
+      card.update(dataCard);
+      card.unbind();
+      card.bind();
+    };
+
+    el.appendChild(card.render());
   }
 };
 /**
@@ -53,7 +72,8 @@ const deleteEl = (container, deleteElement) => {
  * @param {Number} max
  * @return {Number}
  */
-const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getRndInteger = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
 const getRandomBoolean = () => Math.random() >= 0.5;
 /**
  * @param {Array} arr
@@ -83,4 +103,13 @@ const createElement = (template) => {
   return wrapperTemplate.firstChild;
 };
 
-export {getRndInteger, clearChildEl, renderData, renderCardsDatafromClass, getRandomBoolean, randomOrderInArrayAndSplice, createElement, deleteEl};
+export {
+  getRndInteger,
+  clearChildEl,
+  renderData,
+  renderCardsDatafromClass,
+  getRandomBoolean,
+  randomOrderInArrayAndSplice,
+  createElement,
+  deleteEl
+};

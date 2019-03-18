@@ -15,13 +15,9 @@ export default class Card extends CardCommon {
             )
             .join(``)}
         </p>
-        <img src="./images/posters/${this._imgSource}" alt="${
-  this._name
-}" class="film-card__poster">
+        <img src="./images/posters/${this._imgSource}" alt="${this._name}" class="film-card__poster">
         <p class="film-card__description">${this._description}.</p>
-        <button class="film-card__comments">${
-  this._amountComments
-} comments</button>
+        ${this._createBtnOpenComments(this._comments)}
 
         <form class="film-card__controls">
           <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
