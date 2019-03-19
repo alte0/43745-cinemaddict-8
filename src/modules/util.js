@@ -31,13 +31,17 @@ const renderCardsDatafromClass = (arr, el, ClsCard, ClsPopup) => {
   for (const dataCard of arr) {
     const card = new ClsCard(dataCard);
     const popupCard = new ClsPopup(dataCard);
+
     const popupOpen = () => {
       popupCard.render(body);
     };
-    popupCard.closePopup = () => {
-      popupCard.unrender();
-    };
     card.popupOpen = popupOpen;
+
+    popupCard.closePopup = function () {
+      this.unbind();
+      this._element.remove();
+      this._element = null;
+    };
 
     popupCard.onChangeFormData = (newObject) => {
       dataCard.ratingUser = newObject.ratingUser;

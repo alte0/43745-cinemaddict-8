@@ -2,8 +2,7 @@ import {
   renderData,
   renderCardsDatafromClass,
   randomOrderInArrayAndSplice,
-  clearChildEl,
-  // deleteEl
+  clearChildEl
 } from "./modules/util";
 import getFilter from "./modules/make-filter";
 import {filters, cards} from "./modules/data";

@@ -318,12 +318,6 @@ export default class PopapCard extends Component {
     this.bind();
   }
 
-  unrender() {
-    this.unbind();
-    this._element.remove();
-    this._element = null;
-  }
-
   bind() {
     this._element
       .querySelector(`.film-details__close-btn`)
