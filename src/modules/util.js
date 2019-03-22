@@ -139,7 +139,7 @@ const calculateStat = (arr) => {
       minutes: 0,
       hours: 0,
     },
-    genre: [],
+    genres: [],
     topGenre: `-`
   };
 
@@ -186,12 +186,12 @@ const calculateStat = (arr) => {
             hours: film.watched ? initiaStaticList.duration.hours + film.duration.hours : initiaStaticList.duration.hours,
             minutes: film.watched ? initiaStaticList.duration.minutes + film.duration.minutes : initiaStaticList.duration.minutes,
           },
-          genre: initiaStaticList.watched ? initiaStaticList.genre.concat(...film.genre) : initiaStaticList.genre
+          genres: initiaStaticList.watched ? initiaStaticList.genres.concat(...film.genres) : initiaStaticList.genres
         }
     );
   }
 
-  initiaStaticList.statForCanvas = getStatForCanvas(initiaStaticList.genre);
+  initiaStaticList.statForCanvas = getStatForCanvas(initiaStaticList.genres);
   initiaStaticList.topGenre = initiaStaticList.statForCanvas.labels[0];
 
   return initiaStaticList;
