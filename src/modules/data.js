@@ -8,35 +8,35 @@ let i = 0;
 const filters = [
   {
     caption: `All movies`,
-    href() {
+    get href() {
       return `ALL`;
     },
     isActive: true
   },
   {
     caption: `Watchlist`,
-    href() {
+    get href() {
       return this.caption;
     },
     amount: `13`
   },
   {
     caption: `History`,
-    href() {
+    get href() {
       return this.caption;
     },
     amount: `4`
   },
   {
     caption: `Favorites`,
-    href() {
+    get href() {
       return this.caption;
     },
     amount: `8`
   },
   {
     caption: `Stats`,
-    href() {
+    get href() {
       return this.caption;
     },
     isAdditional: true
@@ -73,7 +73,7 @@ const card = () => ({
     {hours: 1, minutes: 30},
     {hours: 0, minutes: 30}
   ][getRndInteger(MIN_NUM, maxNums[1])],
-  genre: [`Comedy`, `Thriller`, `Fantasy`, `Drama`, `Horror`, `Animation`],
+  genres: [`Comedy`, `Thriller`, `Fantasy`, `Drama`, `Horror`, `Animation`].splice(0, getRndInteger(MIN_NUM, maxNums[4])),
   imgSource: [
     `accused.jpg`,
     `blackmail.jpg`,
@@ -91,7 +91,7 @@ const card = () => ({
     {
       textComment: `So long-long story, boring!`,
       author: `Tim Macoveev`,
-      commentDay: new Date(2019, 2, 1),
+      commentDay: new Date(2019, 3, 1),
       emmojiName: `sleeping`
     }
   ],
