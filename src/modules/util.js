@@ -38,15 +38,15 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       }
     };
     card.onAddToWatchList = (bool) => {
-      dataCard.watchlist = bool;
+      dataCard.isWatchlist = bool;
       popupCard.update(dataCard);
     };
     card.onMarkAsWatched = (bool) => {
-      dataCard.watched = bool;
+      dataCard.isWatched = bool;
       popupCard.update(dataCard);
     };
     card.onFavorite = (bool) => {
-      dataCard.favorite = bool;
+      dataCard.isFavorite = bool;
       popupCard.update(dataCard);
     };
 
@@ -58,7 +58,6 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
     popupCard.onChangeFormData = (newObject) => {
       const newDataCard = updateFilmData(arr, dataCard, newObject);
-
       card.update(newDataCard);
       card.partialUpdate();
       card.unbind();
@@ -109,7 +108,7 @@ const getRandomBoolean = () => Math.random() >= 0.5;
 const randomOrderInArrayAndSplice = (arr, isTwo = false) => {
   const copyArr = arr.slice();
 
-  copyArr.sort((a, b) => a.name.length > b.name.length);
+  copyArr.sort((a, b) => a.title.length > b.title.length);
 
   if (isTwo) {
     copyArr.splice(2);
@@ -135,10 +134,7 @@ const createElement = (template) => {
 const calculateStat = (arr) => {
   let initiaStaticList = {
     watched: 0,
-    duration: {
-      minutes: 0,
-      hours: 0,
-    },
+    duration: 0,
     genres: [],
     topGenre: `-`
   };
@@ -181,12 +177,9 @@ const calculateStat = (arr) => {
         {},
         initiaStaticList,
         {
-          watched: initiaStaticList.watched + film.watched,
-          duration: {
-            hours: film.watched ? initiaStaticList.duration.hours + film.duration.hours : initiaStaticList.duration.hours,
-            minutes: film.watched ? initiaStaticList.duration.minutes + film.duration.minutes : initiaStaticList.duration.minutes,
-          },
-          genres: initiaStaticList.watched ? initiaStaticList.genres.concat(...film.genres) : initiaStaticList.genres
+          watched: initiaStaticList.watched + film.isWatched,
+          duration: film.isWatched ? initiaStaticList.duration + film.duration : initiaStaticList.duration,
+          genres: film.isWatched ? initiaStaticList.genres.concat(...film.genres) : initiaStaticList.genres
         }
     );
   }
@@ -206,11 +199,11 @@ const filterFilms = (filterName, initialFilms) => {
     case `#all`:
       return initialFilms;
     case `#watchlist`:
-      return initialFilms.filter((film) => film.watchlist);
+      return initialFilms.filter((film) => film.isWatchlist);
     case `#history`:
-      return initialFilms.filter((film) => film.watched);
+      return initialFilms.filter((film) => film.isWatched);
     case `#favorites`:
-      return initialFilms.filter((film) => film.favorite);
+      return initialFilms.filter((film) => film.isFavorite);
     default:
       return initialFilms;
   }
@@ -226,6 +219,13 @@ const updateFilmData = (films, film, newDataFilm) => {
   films[index] = Object.assign({}, film, newDataFilm);
   return films[index];
 };
+/**
+ * @param {HTMLElement} el
+ * @param {String} str
+ */
+const recordText = (el, str) => {
+  el.textContent = str;
+};
 
 export {
   getRndInteger,
@@ -239,5 +239,6 @@ export {
   calculateStat,
   deleteEl,
   renderTempate,
-  filterFilms
+  filterFilms,
+  recordText
 };

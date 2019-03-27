@@ -12,19 +12,19 @@ export default class ComponentCard extends Component {
       );
     }
 
-    this._name = data.name;
+    this._id = data.id;
+    this._title = data.title;
+    this._alternativeTitle = data.alternativeTitle;
     this._rating = data.rating;
-    this._ratingUser = data.ratingUser;
-    this._yearManufacture = data.yearManufacture;
-    this._year = moment(this._yearManufacture).isValid() ? moment(this._yearManufacture).format(`YYYY`) : ``;
-    this._duration = moment.duration(data.duration).hours() + ` h ` + moment.duration(data.duration).minutes() + ` m`;
+    this._year = moment(data.releaseDate).isValid() ? moment(data.releaseDate).format(`YYYY`) : ``;
+    this._duration = moment.duration(data.duration, `minutes`).hours() + ` h ` + moment.duration(data.duration, `minutes`).minutes() + ` m`;
     this._genres = data.genres;
     this._imgSource = data.imgSource;
     this._description = data.description;
     this._comments = data.comments;
-    this._watchlist = data.watchlist;
-    this._watched = data.watched;
-    this._favorite = data.favorite;
+    this._isWatchlist = data.isWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
 
     this._openPopup = null;
     this._onAddToWatchList = null;
@@ -61,24 +61,24 @@ export default class ComponentCard extends Component {
   _onButtonAddWatchlistClick(evt) {
     evt.preventDefault();
     if (typeof this._onAddToWatchList === `function`) {
-      const watchlist = !this._watchlist;
-      this._onAddToWatchList(watchlist);
+      this._isWatchlist = !this._isWatchlist;
+      this._onAddToWatchList(this._isWatchlist);
     }
   }
 
   _onButtonMarkAsWatchedClick(evt) {
     evt.preventDefault();
     if (typeof this._onMarkAsWatched === `function`) {
-      const watched = !this._watched;
-      this._onMarkAsWatched(watched);
+      this._isWatched = !this._isWatched;
+      this._onMarkAsWatched(this._isWatched);
     }
   }
 
   _onButtonFavoriteClick(evt) {
     evt.preventDefault();
     if (typeof this._onMarkAsWatched === `function`) {
-      const favorite = !this._favorite;
-      this._onFavorite(favorite);
+      this._isFavorite = !this._isFavorite;
+      this._onFavorite(this._isFavorite);
     }
   }
 
@@ -113,9 +113,9 @@ export default class ComponentCard extends Component {
 
   update(data) {
     this._comments = data.comments;
-    this._watched = data.watched;
-    this._watchlist = data.watchlist;
-    // this._partialUpdate();
+    this._isWatched = data.isWatched;
+    this._isWatchlist = data.isWatchlist;
+    this._isFavorite = data.isFavorite;
   }
 
   bind() {

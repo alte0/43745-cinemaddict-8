@@ -31,14 +31,14 @@ const createControlSelectScore = (scoreUser) => {
  */
 const createComments = (arr) => (
   `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${arr.length}</span></h3><ul class="film-details__comments-list">
-    ${arr.map((comment) => (`
+    ${arr.map((objComment) => (`
       <li class="film-details__comment">
-        <span class="film-details__comment-emoji">${EMOJIS[comment.emmojiName] === undefined ? `` : EMOJIS[comment.emmojiName]}</span>
+        <span class="film-details__comment-emoji">${EMOJIS[objComment.emotion] === undefined ? `` : EMOJIS[objComment.emotion]}</span>
         <div>
-          <p class="film-details__comment-text">${comment.textComment}</p>
+          <p class="film-details__comment-text">${objComment.comment}</p>
           <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${moment(comment.commentDay).fromNow()}</span>
+            <span class="film-details__comment-author">${objComment.author}</span>
+            <span class="film-details__comment-day">${moment(objComment.date).fromNow()}</span>
           </p>
         </div>
       </li>
@@ -50,22 +50,25 @@ export default class PopapCard extends Component {
   constructor(data) {
     super();
 
-    this._name = data.name;
+    this._id = data.id;
+    this._title = data.title;
+    this._alternativeTitle = data.alternativeTitle;
+    this._director = data.director;
+    this._writers = data.writers;
     this._rating = data.rating;
     this._ratingUser = data.ratingUser;
-    this._yearManufacture = data.yearManufacture;
-    this._releaseDate = data.yearManufacture;
-    this._duration = data.duration;
+    this._releaseDate = moment(data.releaseDate).isValid() ? moment(data.releaseDate).format(`D MMMM YYYY`) : ``;
+    this._duration = moment.duration(data.duration, `minutes`).asMinutes();
     this._genres = data.genres;
     this._imgSource = data.imgSource;
     this._description = data.description;
     this._comments = data.comments;
     this._ageLimit = data.ageLimit;
-    this._cast = data.cast;
-    this._country = data.country;
-    this._watchlist = data.watchlist;
-    this._watched = data.watched;
-    this._favorite = data.favorite;
+    this._actors = data.actors;
+    this._releaseCountry = data.releaseCountry;
+    this._isWatchlist = data.isWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
 
     this._onChangeFormData = null;
     this._onClosePopup = null;
@@ -86,15 +89,15 @@ export default class PopapCard extends Component {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="images/posters/${this._imgSource}" alt="${this._name}">
+              <img class="film-details__poster-img" src="./${this._imgSource}" alt="${this._title}">
               <p class="film-details__age">${this._ageLimit}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${this._name}</h3>
-                  <p class="film-details__title-original">Original: ${this._name}</p>
+                  <h3 class="film-details__title">${this._title}</h3>
+                  <p class="film-details__title-original">Original: ${this._alternativeTitle}</p>
                 </div>
 
                 <div class="film-details__rating">
@@ -106,28 +109,30 @@ export default class PopapCard extends Component {
               <table class="film-details__table">
                 <tr class="film-details__row">
                   <td class="film-details__term">Director</td>
-                  <td class="film-details__cell">Brad Bird</td>
+                  <td class="film-details__cell">${this._director}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">Brad Bird</td>
+                  <td class="film-details__cell">${Array.from(this._writers)
+                    .map((writer, index) => this._writers.length - 1 === index ? `${writer}` : `${writer}, `)
+                    .join(``)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${Array.from(this._cast)
-                    .map((actor, index) => this._cast.length - 1 === index ? `${actor}` : `${actor}, `)
+                  <td class="film-details__cell">${Array.from(this._actors)
+                    .map((actor, index) => this._actors.length - 1 === index ? `${actor}` : `${actor}, `)
                     .join(``)}</td>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${moment(this._releaseDate).isValid() ? moment(this._yearManufacture).format(`D MMMM YYYY`) : ``} (${this._country.toUpperCase()})</td>
+                  <td class="film-details__cell">${this._releaseDate} (${this._releaseCountry.toUpperCase()})</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${moment.duration(this._duration).asMinutes()} min</td>
+                  <td class="film-details__cell">${this._duration} min</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${this._country.toUpperCase()}</td>
+                  <td class="film-details__cell">${this._releaseCountry.toUpperCase()}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
@@ -147,13 +152,13 @@ export default class PopapCard extends Component {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._watchlist ? `checked` : ``}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._isWatchlist ? `checked` : ``}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"  ${this._watched ? `checked` : ``}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"  ${this._isWatched ? `checked` : ``}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._favorite ? `checked` : ``}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._isFavorite ? `checked` : ``}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
 
@@ -191,11 +196,11 @@ export default class PopapCard extends Component {
 
             <div class="film-details__user-score">
               <div class="film-details__user-rating-poster">
-                <img src="images/posters/${this._imgSource}" alt="${this._name}" class="film-details__user-rating-img">
+                <img src="./${this._imgSource}" alt="${this._title}" class="film-details__user-rating-img">
               </div>
 
               <section class="film-details__user-rating-inner">
-                <h3 class="film-details__user-rating-title">${this._name}</h3>
+                <h3 class="film-details__user-rating-title">${this._title}</h3>
 
                 <p class="film-details__user-rating-feelings">How you feel it?</p>
 
@@ -235,9 +240,9 @@ export default class PopapCard extends Component {
   _updateData() {
     const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     const newData = this._processForm(formData);
-    const copyCommments = this._comments.slice();
 
-    if (newData.comments.textComment !== ``) {
+    const copyCommments = this._comments.slice();
+    if (newData.comments.comment !== ``) {
       copyCommments.push(newData.comments);
     }
     newData.comments = [...copyCommments];
@@ -301,25 +306,26 @@ export default class PopapCard extends Component {
   }
 
   update(data) {
-    this._ratingUser = data.ratingUser;
-    this._watchlist = data.watchlist;
-    this._watched = data.watched;
-    this._favorite = data.favorite;
+    if (data.ratingUser) {
+      this._ratingUser = data.ratingUser;
+    }
+    this._isWatchlist = data.isWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
     this._comments = data.comments;
   }
 
   _processForm(formData) {
     const entry = {
-      watchlist: false,
-      watched: false,
-      favorite: false,
+      isWatchlist: false,
+      isWatched: false,
+      isFavorite: false,
       comments: {
-        textComment: ``,
+        comment: ``,
         author: `User`,
-        commentDay: new Date(),
-        emmojiName: ``
-      },
-      ratingUser: `-`
+        date: new Date(),
+        emotion: ``
+      }
     };
 
     const popapCardEditMapper = PopapCard.createMapper(entry);
@@ -340,11 +346,11 @@ export default class PopapCard extends Component {
   static createMapper(target) {
     return {
       score: (value) => (target.ratingUser = value),
-      watchlist: (value) => (target.watchlist = value === `on`),
-      watched: (value) => (target.watched = value === `on`),
-      favorite: (value) => (target.favorite = value === `on`),
-      comment: (value) => (target.comments.textComment = value),
-      commentEmoji: (value) => (target.comments.emmojiName = value)
+      watchlist: (value) => (target.isWatchlist = value === `on`),
+      watched: (value) => (target.isWatched = value === `on`),
+      favorite: (value) => (target.isFavorite = value === `on`),
+      comment: (value) => (target.comments.comment = value),
+      commentEmoji: (value) => (target.comments.emotion = value)
     };
   }
   bind() {

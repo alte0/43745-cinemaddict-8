@@ -4,9 +4,10 @@ import {
   randomOrderInArrayAndSplice,
   clearChildEl,
   calculateStat,
-  filterFilms
+  filterFilms,
+  recordText
 } from "./modules/util";
-import {filters, cards} from "./modules/data";
+import {filters} from "./modules/data";
 import Card from "./clases/card";
 import CardExtra from "./clases/card-extra";
 import PopupCard from "./clases/popup-card";
@@ -14,8 +15,15 @@ import Filter from "./clases/component-filter";
 import getStaticCtx from "./modules/statistic";
 import renderStatList from "./modules/make-stat-list";
 import renderStatRankLabel from "./modules/make-stat-rank-label";
+import {API} from "./clases/api";
 
-const initialCardsFilms = cards;
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test`;
+const END_POINT = `https://es8-demo-srv.appspot.com/moowle/`;
+
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+
+const LoadingMoviesText = `Loading movies...`;
+const LoadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
@@ -27,6 +35,24 @@ const filmsCardsContainer = body.querySelector(`.films .films-list .films-list__
 const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
 const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+let initialCardsFilms;
+
+recordText(filmsCardsContainer, LoadingMoviesText);
+api.getMovies()
+  .then((dataFilms) => {
+    // console.log(dataFilms);
+    // renderCards(dataFilms, filmsCardsContainer, Card, PopupCard);
+    clearChildEl(filmsCardsContainer);
+    initialCardsFilms = dataFilms;
+    // renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainer, Card, PopupCard);
+    renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
+  })
+  .catch((err) => {
+    clearChildEl(filmsCardsContainer);
+    recordText(filmsCardsContainer, LoadingMoviesErorText);
+    throw err;
+  });
+
 /**
  * @param {Event} evt
  */
@@ -65,7 +91,7 @@ const filterCardsFilms = (evt) => {
 };
 
 renderFilters(filters, mainNav, Filter, filterCardsFilms);
-renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
-renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+// renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
+// renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+// renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
 
