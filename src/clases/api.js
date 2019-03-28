@@ -32,16 +32,6 @@ const API = class {
       .then(ModelFilm.parseFilms);
   }
 
-  createMovie({movie}) {
-    return this._load({
-      url: `movies`,
-      method: Method.POST,
-      body: JSON.stringify(movie),
-      headers: new Headers({'Content-Type': `application/json`})
-    })
-      .then(toJSON);
-  }
-
   updateMovie({id, data}) {
     return this._load({
       url: `movies/${id}`,
@@ -52,20 +42,11 @@ const API = class {
       .then(toJSON);
   }
 
-  deleteMovie({id}) {
-    return this._load({url: `movies/${id}`, method: Method.DELETE});
-  }
-
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus)
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error(`fetch error: ${err}`);
-        throw err;
-      });
+      .then(checkStatus);
   }
 };
 

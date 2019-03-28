@@ -1,11 +1,12 @@
 import {
-  renderCards,
+  // renderCards,
   renderFilters,
   randomOrderInArrayAndSplice,
   clearChildEl,
   calculateStat,
   filterFilms,
-  recordText
+  recordText,
+  updateFilmData
 } from "./modules/util";
 import {filters} from "./modules/data";
 import Card from "./clases/card";
@@ -37,6 +38,59 @@ const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`
 const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
 let initialCardsFilms;
 
+/**
+ * @param {Array} arr
+ * @param {HTMLElement} el
+ * @param {Function} ClsCard
+ * @param {Function} ClsPopup
+ */
+const renderCards = (arr, el, ClsCard, ClsPopup) => {
+  // const body = document.body;
+
+  for (const dataCard of arr) {
+    const cardComponent = new ClsCard(dataCard);
+    const popupCardComponent = new ClsPopup(dataCard);
+
+    cardComponent.popupOpen = () => {
+      if (!body.querySelector(`.film-details`)) {
+        popupCardComponent.render(body);
+      }
+    };
+    cardComponent.onAddToWatchList = (bool) => {
+      dataCard.isWatchlist = bool;
+      popupCardComponent.update(dataCard);
+    };
+    cardComponent.onMarkAsWatched = (bool) => {
+      dataCard.isWatched = bool;
+      popupCardComponent.update(dataCard);
+    };
+    cardComponent.onFavorite = (bool) => {
+      dataCard.isFavorite = bool;
+      popupCardComponent.update(dataCard);
+    };
+
+    popupCardComponent.closePopup = function () {
+      this.unbind();
+      this._element.remove();
+      this._element = null;
+    };
+
+    popupCardComponent.onChangeFormData = (newObject) => {
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newFilm) => {
+          cardComponent.update(newFilm);
+          cardComponent.partialUpdate();
+          cardComponent.unbind();
+          cardComponent.bind();
+        });
+    };
+
+    el.appendChild(cardComponent.render());
+  }
+};
+
 recordText(filmsCardsContainer, LoadingMoviesText);
 api.getMovies()
   .then((dataFilms) => {
@@ -50,6 +104,8 @@ api.getMovies()
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
     recordText(filmsCardsContainer, LoadingMoviesErorText);
+    // eslint-disable-next-line no-console
+    console.error(`fetch error: ${err}`);
     throw err;
   });
 

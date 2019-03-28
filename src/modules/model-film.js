@@ -21,19 +21,35 @@ class ModelFilm {
     this.ratingUser = data.user_details.personal_rating;
   }
 
-  // toRAW() {
-  //   return {
-  //     'id': this.id,
-  //     'title': this.title,
-  //     'due_date': this.dueDate,
-  //     'tags': [...this.tags.values()],
-  //     'picture': this.picture,
-  //     'repeating_days': this.repeatingDays,
-  //     'color': this.color,
-  //     'is_favorite': this.isFavorite,
-  //     'is_done': this.isDone,
-  //   };
-  // }
+  toRAW() {
+    return {
+      "id": this.id,
+      "film_info": {
+        "title": this.title,
+        "alternative_title": this.alternativeTitle,
+        "total_rating": this.rating,
+        "poster": this.imgSource,
+        "age_rating": this.ageLimit,
+        "director": this.director,
+        "writers": this.writers,
+        "actors": this.actors,
+        "release": {
+          "date": this.releaseDate,
+          "release_country": this.releaseCountry
+        },
+        "runtime": this.duration,
+        "genre": this.genres,
+        "description": this.description
+      },
+      "user_details": {
+        "personal_rating": this.ratingUser,
+        "watchlist": this.isWatchlist,
+        "already_watched": this.isWatched,
+        "favorite": this.isFavorite
+      },
+      "comments": this.comments
+    };
+  }
 
   static parseFilm(data) {
     return new ModelFilm(data);

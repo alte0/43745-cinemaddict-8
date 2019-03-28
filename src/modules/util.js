@@ -19,54 +19,58 @@ const renderData = (arr, el, fn) => {
 
   renderTempate(template, el);
 };
-/**
- * @param {Array} arr
- * @param {HTMLElement} el
- * @param {Function} ClsCard
- * @param {Function} ClsPopup
- */
-const renderCards = (arr, el, ClsCard, ClsPopup) => {
-  const body = document.body;
+// /**
+//  * @param {Array} arr
+//  * @param {HTMLElement} el
+//  * @param {Function} ClsCard
+//  * @param {Function} ClsPopup
+//  */
+// const renderCards = (arr, el, ClsCard, ClsPopup) => {
+//   const body = document.body;
 
-  for (const dataCard of arr) {
-    const card = new ClsCard(dataCard);
-    const popupCard = new ClsPopup(dataCard);
+//   for (const dataCard of arr) {
+//     const card = new ClsCard(dataCard);
+//     const popupCard = new ClsPopup(dataCard);
 
-    card.popupOpen = () => {
-      if (!body.querySelector(`.film-details`)) {
-        popupCard.render(body);
-      }
-    };
-    card.onAddToWatchList = (bool) => {
-      dataCard.isWatchlist = bool;
-      popupCard.update(dataCard);
-    };
-    card.onMarkAsWatched = (bool) => {
-      dataCard.isWatched = bool;
-      popupCard.update(dataCard);
-    };
-    card.onFavorite = (bool) => {
-      dataCard.isFavorite = bool;
-      popupCard.update(dataCard);
-    };
+//     card.popupOpen = () => {
+//       if (!body.querySelector(`.film-details`)) {
+//         popupCard.render(body);
+//       }
+//     };
+//     card.onAddToWatchList = (bool) => {
+//       dataCard.isWatchlist = bool;
+//       popupCard.update(dataCard);
+//     };
+//     card.onMarkAsWatched = (bool) => {
+//       dataCard.isWatched = bool;
+//       popupCard.update(dataCard);
+//     };
+//     card.onFavorite = (bool) => {
+//       dataCard.isFavorite = bool;
+//       popupCard.update(dataCard);
+//     };
 
-    popupCard.closePopup = function () {
-      this.unbind();
-      this._element.remove();
-      this._element = null;
-    };
+//     popupCard.closePopup = function () {
+//       this.unbind();
+//       this._element.remove();
+//       this._element = null;
+//     };
 
-    popupCard.onChangeFormData = (newObject) => {
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
-      card.update(newDataCard);
-      card.partialUpdate();
-      card.unbind();
-      card.bind();
-    };
+//     popupCard.onChangeFormData = (newObject) => {
+//       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
-    el.appendChild(card.render());
-  }
-};
+//       api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+//         .then((newFilm)=> {
+//           card.update(newFilm);
+//           card.partialUpdate();
+//           card.unbind();
+//           card.bind();
+//         });
+//     };
+
+//     el.appendChild(card.render());
+//   }
+// };
 /**
  * @param {Array} arr
  * @param {HTMLElement} el
@@ -216,7 +220,7 @@ const filterFilms = (filterName, initialFilms) => {
  */
 const updateFilmData = (films, film, newDataFilm) => {
   const index = films.findIndex((item) => item === film);
-  films[index] = Object.assign({}, film, newDataFilm);
+  films[index] = Object.assign(film, newDataFilm);
   return films[index];
 };
 /**
@@ -231,7 +235,7 @@ export {
   getRndInteger,
   clearChildEl,
   renderData,
-  renderCards,
+  // renderCards,
   renderFilters,
   getRandomBoolean,
   randomOrderInArrayAndSplice,
@@ -240,5 +244,6 @@ export {
   deleteEl,
   renderTempate,
   filterFilms,
-  recordText
+  recordText,
+  updateFilmData
 };
