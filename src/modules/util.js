@@ -208,6 +208,10 @@ const filterFilms = (filterName, initialFilms) => {
       return initialFilms.filter((film) => film.isWatched);
     case `#favorites`:
       return initialFilms.filter((film) => film.isFavorite);
+    case `Most rated`:
+      return [...initialFilms].sort((a, b) => b.rating - a.rating);
+    case `Most commented`:
+      return [...initialFilms].sort((a, b) => b.comments.length - a.comments.length);
     default:
       return initialFilms;
   }

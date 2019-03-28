@@ -15,7 +15,7 @@ export default class CardExtra extends CardCommon {
             )
             .join(``)}
         </p>
-        <img src="./images/posters/${this._imgSource}" alt="" class="film-card__poster">
+        <img src="./${this._imgSource}" alt="" class="film-card__poster">
         ${this._createBtnOpenComments(this._comments)}
       </article>
     `.trim();

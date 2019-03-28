@@ -22,7 +22,7 @@ import renderStatList from "./modules/make-stat-list";
 import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test`;
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
@@ -40,6 +40,8 @@ const filmsCardsContainer = body.querySelector(`.films .films-list .films-list__
 const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
 const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+const filterNameTopRated = `Most rated`;
+const filterNameTopCommented = `Most commented`;
 let initialCardsFilms;
 
 /**
@@ -160,24 +162,6 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
   }
 };
 
-recordText(filmsCardsContainer, LoadingMoviesText);
-api.getMovies()
-  .then((dataFilms) => {
-    // console.log(dataFilms);
-    // renderCards(dataFilms, filmsCardsContainer, Card, PopupCard);
-    clearChildEl(filmsCardsContainer);
-    initialCardsFilms = dataFilms;
-    // renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainer, Card, PopupCard);
-    renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
-  })
-  .catch((err) => {
-    clearChildEl(filmsCardsContainer);
-    recordText(filmsCardsContainer, LoadingMoviesErorText);
-    // eslint-disable-next-line no-console
-    console.error(`fetch error: ${err}`);
-    throw err;
-  });
-
 /**
  * @param {Event} evt
  */
@@ -215,8 +199,21 @@ const filterCardsFilms = (evt) => {
   }
 };
 
-renderFilters(filters, mainNav, Filter, filterCardsFilms);
-// renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
-// renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-// renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+recordText(filmsCardsContainer, LoadingMoviesText);
+api.getMovies()
+  .then((dataFilms) => {
+    clearChildEl(filmsCardsContainer);
+    initialCardsFilms = dataFilms;
+    renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
+    renderCards(filterFilms(filterNameTopRated, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+    renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+  })
+  .catch((err) => {
+    clearChildEl(filmsCardsContainer);
+    recordText(filmsCardsContainer, LoadingMoviesErorText);
+    // eslint-disable-next-line no-console
+    console.error(`fetch error: ${err}`);
+    throw err;
+  });
 
+renderFilters(filters, mainNav, Filter, filterCardsFilms);
