@@ -72,6 +72,7 @@ export default class PopapCard extends Component {
 
     this._onChangeFormData = null;
     this._onClosePopup = null;
+    this._onTextareaKeyDown = null;
 
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
@@ -222,19 +223,27 @@ export default class PopapCard extends Component {
   set closePopup(fn) {
     this._onClosePopup = fn;
   }
+  set onTextareaKeyDown(fn) {
+    this._onTextareaKeyDown = fn;
+  }
 
   _onButtonClick() {
     if (typeof this._onClosePopup === `function`) {
-      this._updateData();
       this._onClosePopup();
     }
   }
 
   _windowEscKeyDownHander(evt) {
     if (evt.keyCode === Keycode.KEYCODE_ESC) {
-      this._updateData();
       this._onClosePopup();
     }
+  }
+
+  _collectFormData() {
+    const formDetais = this._element.querySelector(`.film-details__inner`);
+    const formData = new FormData(formDetais);
+    const newData = this._processForm(formData);
+    return newData;
   }
 
   _updateData() {
@@ -275,9 +284,22 @@ export default class PopapCard extends Component {
     const target = evt.target;
 
     if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
-      this._updateData();
-      this._partialUpdateComments();
-      target.value = ``;
+      const newData = this._collectFormData();
+      const copyCommments = this._comments.slice();
+
+      target.parentElement.style.border = ``;
+      target.parentElement.classList.remove(`shake`);
+      target.disabled = true;
+
+      if (newData.comments.comment !== ``) {
+        copyCommments.push(newData.comments);
+      }
+
+      newData.comments = [...copyCommments];
+
+      if (typeof this._onTextareaKeyDown === `function`) {
+        this._onTextareaKeyDown(newData);
+      }
     }
   }
 
@@ -293,7 +315,7 @@ export default class PopapCard extends Component {
     this.bind();
   }
 
-  _partialUpdateComments() {
+  partialUpdateComments() {
     const commentsWrap = this._element.querySelector(`.film-details__comments-wrap`);
     const commentsTitle = this._element.querySelector(`.film-details__comments-title`);
     const commentsList = this._element.querySelector(`.film-details__comments-list`);

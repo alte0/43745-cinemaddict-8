@@ -19,7 +19,7 @@ import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test`;
-const END_POINT = `https://es8-demo-srv.appspot.com/moowle/`;
+const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
@@ -37,6 +37,7 @@ const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--ext
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
 const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
 let initialCardsFilms;
+let catchErrorText;
 
 /**
  * @param {Array} arr
@@ -45,7 +46,6 @@ let initialCardsFilms;
  * @param {Function} ClsPopup
  */
 const renderCards = (arr, el, ClsCard, ClsPopup) => {
-  // const body = document.body;
 
   for (const dataCard of arr) {
     const cardComponent = new ClsCard(dataCard);
@@ -93,6 +93,38 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           cardComponent.partialUpdate();
           cardComponent.unbind();
           cardComponent.bind();
+        })
+        .catch((err) => {
+          catchErrorText = err;
+        });
+
+      if (catchErrorText) {
+        return catchErrorText;
+      }
+      return true;
+    };
+
+    popupCardComponent.onTextareaKeyDown = function (newObject) {
+      const textArea = body.querySelector(`.film-details__comment-input`);
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newDataFim) => {
+          cardComponent.update(newDataFim);
+          cardComponent.partialUpdate();
+          cardComponent.unbind();
+          cardComponent.bind();
+
+          popupCardComponent.update(newDataFim);
+          popupCardComponent.partialUpdateComments();
+
+          textArea.value = ``;
+          textArea.disabled = false;
+        })
+        .catch(() => {
+          textArea.parentElement.style.border = `5px solid red`;
+          textArea.parentElement.classList.add(`shake`);
+          textArea.disabled = false;
         });
     };
 
