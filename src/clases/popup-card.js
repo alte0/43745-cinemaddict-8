@@ -1,6 +1,6 @@
 import Component from "./сomponent";
 import moment from "moment";
-import {createElement} from "../modules/util";
+import {createElement, setDefaulStyle, setBlockElem} from "../modules/util";
 
 const EMOJIS = {
   "sleeping": `😴`,
@@ -282,14 +282,14 @@ export default class PopapCard extends Component {
   _onKeydownEnter(evt) {
     const keyCode = evt.keyCode;
     const target = evt.target;
+    const parentEl = evt.target.parentElement;
 
     if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
       const newData = this._collectFormData();
       const copyCommments = this._comments.slice();
 
-      target.parentElement.style.border = ``;
-      target.parentElement.classList.remove(`shake`);
-      target.disabled = true;
+      setDefaulStyle(parentEl);
+      setBlockElem(target);
 
       if (newData.comments.comment !== ``) {
         copyCommments.push(newData.comments);

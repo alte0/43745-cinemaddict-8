@@ -230,7 +230,32 @@ const updateFilmData = (films, film, newDataFilm) => {
 const recordText = (el, str) => {
   el.textContent = str;
 };
-
+/**
+ * @param {HTMLElement} el
+ */
+const setBlockElem = (el) => {
+  el.disabled = true;
+};
+/**
+ * @param {HTMLElement} el
+ */
+const setUnBlockElem = (el) => {
+  el.disabled = false;
+};
+/**
+ * @param {HTMLElement} el
+ */
+const setDefaulStyle = (el) => {
+  el.style.border = ``;
+  el.classList.remove(`shake`);
+};
+/**
+ * @param {HTMLElement} el
+ */
+const setErrorStyle = (el) => {
+  el.style.border = `5px solid red`;
+  el.classList.add(`shake`);
+};
 export {
   getRndInteger,
   clearChildEl,
@@ -245,5 +270,9 @@ export {
   renderTempate,
   filterFilms,
   recordText,
-  updateFilmData
+  updateFilmData,
+  setBlockElem,
+  setUnBlockElem,
+  setDefaulStyle,
+  setErrorStyle
 };

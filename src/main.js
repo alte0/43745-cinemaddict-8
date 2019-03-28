@@ -6,7 +6,9 @@ import {
   calculateStat,
   filterFilms,
   recordText,
-  updateFilmData
+  updateFilmData,
+  setUnBlockElem,
+  setErrorStyle
 } from "./modules/util";
 import {filters} from "./modules/data";
 import Card from "./clases/card";
@@ -119,12 +121,11 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           popupCardComponent.partialUpdateComments();
 
           textArea.value = ``;
-          textArea.disabled = false;
+          setUnBlockElem(textArea);
         })
         .catch(() => {
-          textArea.parentElement.style.border = `5px solid red`;
-          textArea.parentElement.classList.add(`shake`);
-          textArea.disabled = false;
+          setErrorStyle(textArea.parentElement);
+          setUnBlockElem(textArea);
         });
     };
 
