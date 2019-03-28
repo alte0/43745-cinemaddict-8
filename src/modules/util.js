@@ -244,16 +244,26 @@ const setUnBlockElem = (el) => {
 };
 /**
  * @param {HTMLElement} el
+ * @param {Boolean} bool
  */
-const setDefaulStyle = (el) => {
-  el.style.border = ``;
+const setDefaulStyle = (el, bool = true) => {
+  if (bool) {
+    el.style.border = ``;
+  } else {
+    el.style.backgroundColor = ``;
+  }
   el.classList.remove(`shake`);
 };
 /**
  * @param {HTMLElement} el
+ * @param {Boolean} bool
  */
-const setErrorStyle = (el) => {
-  el.style.border = `5px solid red`;
+const setErrorStyle = (el, bool = true) => {
+  if (bool) {
+    el.style.border = `5px solid red`;
+  } else {
+    el.style.backgroundColor = `red`;
+  }
   el.classList.add(`shake`);
 };
 export {

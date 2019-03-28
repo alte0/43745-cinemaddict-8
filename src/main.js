@@ -7,6 +7,8 @@ import {
   filterFilms,
   recordText,
   updateFilmData,
+  setDefaulStyle,
+  setBlockElem,
   setUnBlockElem,
   setErrorStyle
 } from "./modules/util";
@@ -39,7 +41,6 @@ const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--ext
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
 const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
 let initialCardsFilms;
-let catchErrorText;
 
 /**
  * @param {Array} arr
@@ -95,18 +96,10 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           cardComponent.partialUpdate();
           cardComponent.unbind();
           cardComponent.bind();
-        })
-        .catch((err) => {
-          catchErrorText = err;
         });
-
-      if (catchErrorText) {
-        return catchErrorText;
-      }
-      return true;
     };
 
-    popupCardComponent.onTextareaKeyDown = function (newObject) {
+    popupCardComponent.onTextareaKeyDown = (newObject) => {
       const textArea = body.querySelector(`.film-details__comment-input`);
       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
@@ -126,6 +119,40 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .catch(() => {
           setErrorStyle(textArea.parentElement);
           setUnBlockElem(textArea);
+        });
+    };
+
+    popupCardComponent.onRadioRatingChange = (newObject, evt) => {
+      const target = evt.target;
+      const ratingInputs = evt.target.parentElement.querySelectorAll(`[name="score"]`);
+      const ratingLabels = evt.target.parentElement.querySelectorAll(`.film-details__user-rating-label`);
+      const nextEl = target.nextElementSibling;
+
+      ratingLabels.forEach((elem) => {
+        setDefaulStyle(elem, false);
+      });
+      ratingInputs.forEach((elem) => {
+        setBlockElem(elem);
+      });
+
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+      .then((newDataFim) => {
+        cardComponent.update(newDataFim);
+
+        popupCardComponent.update(newDataFim);
+        popupCardComponent.partialUpdateRating();
+
+        ratingInputs.forEach((elem) => {
+          setUnBlockElem(elem);
+        });
+      })
+        .catch(() => {
+          setErrorStyle(nextEl, false);
+          ratingInputs.forEach((elem) => {
+            setUnBlockElem(elem);
+          });
         });
     };
 

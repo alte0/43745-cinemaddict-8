@@ -19,8 +19,7 @@ const createControlSelectScore = (scoreUser) => {
   const arr = [];
   for (let i = 1; i < 10; i++) {
     arr.push(`
-      <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i}" id="rating-${i}" ${i === +scoreUser ? `checked` : ``}>
-      <label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
+      <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i}" id="rating-${i}" ${i === +scoreUser ? `checked` : ``}><label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
       `.trim());
   }
   return arr.join(``);
@@ -73,6 +72,7 @@ export default class PopapCard extends Component {
     this._onChangeFormData = null;
     this._onClosePopup = null;
     this._onTextareaKeyDown = null;
+    this._onRadioRatingChange = null;
 
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
@@ -227,6 +227,10 @@ export default class PopapCard extends Component {
     this._onTextareaKeyDown = fn;
   }
 
+  set onRadioRatingChange(fn) {
+    this._onRadioRatingChange = fn;
+  }
+
   _onButtonClick() {
     if (typeof this._onClosePopup === `function`) {
       this._onClosePopup();
@@ -243,6 +247,11 @@ export default class PopapCard extends Component {
     const formDetais = this._element.querySelector(`.film-details__inner`);
     const formData = new FormData(formDetais);
     const newData = this._processForm(formData);
+    const copyCommments = this._comments.slice();
+    if (newData.comments.comment !== ``) {
+      copyCommments.push(newData.comments);
+    }
+    newData.comments = [...copyCommments];
     return newData;
   }
 
@@ -264,9 +273,15 @@ export default class PopapCard extends Component {
   }
 
   _onChangeRatingClick(evt) {
-    const target = evt.target;
+    const newData = this._collectFormData();
+    if (typeof this._onRadioRatingChange === `function`) {
+      this._onRadioRatingChange(newData, evt);
+    }
+  }
+
+  partialUpdateRating() {
     const userRating = this._element.querySelector(`.film-details__user-rating`);
-    const scoreElement = createElement(`<p class="film-details__user-rating">Your rate ${target.value}</p>`);
+    const scoreElement = createElement(`<p class="film-details__user-rating">Your rate ${this._ratingUser}</p>`);
     const parentElScoreUSer = userRating.parentElement;
     parentElScoreUSer.removeChild(userRating);
     parentElScoreUSer.appendChild(scoreElement);
@@ -286,16 +301,16 @@ export default class PopapCard extends Component {
 
     if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
       const newData = this._collectFormData();
-      const copyCommments = this._comments.slice();
+      // const copyCommments = this._comments.slice();
 
       setDefaulStyle(parentEl);
       setBlockElem(target);
 
-      if (newData.comments.comment !== ``) {
-        copyCommments.push(newData.comments);
-      }
+      // if (newData.comments.comment !== ``) {
+      //   copyCommments.push(newData.comments);
+      // }
 
-      newData.comments = [...copyCommments];
+      // newData.comments = [...copyCommments];
 
       if (typeof this._onTextareaKeyDown === `function`) {
         this._onTextareaKeyDown(newData);
@@ -328,9 +343,7 @@ export default class PopapCard extends Component {
   }
 
   update(data) {
-    if (data.ratingUser) {
-      this._ratingUser = data.ratingUser;
-    }
+    this._ratingUser = data.ratingUser;
     this._isWatchlist = data.isWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
