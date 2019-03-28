@@ -58,15 +58,24 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     };
     cardComponent.onAddToWatchList = (bool) => {
       dataCard.isWatchlist = bool;
-      popupCardComponent.update(dataCard);
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+        });
     };
     cardComponent.onMarkAsWatched = (bool) => {
       dataCard.isWatched = bool;
-      popupCardComponent.update(dataCard);
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+        });
     };
     cardComponent.onFavorite = (bool) => {
       dataCard.isFavorite = bool;
-      popupCardComponent.update(dataCard);
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+        });
     };
 
     popupCardComponent.closePopup = function () {
