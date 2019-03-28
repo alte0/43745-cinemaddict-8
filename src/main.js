@@ -1,7 +1,7 @@
 import {
   // renderCards,
   renderFilters,
-  randomOrderInArrayAndSplice,
+  // randomOrderInArrayAndSplice,
   clearChildEl,
   calculateStat,
   filterFilms,
@@ -66,6 +66,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
         });
     };
     cardComponent.onMarkAsWatched = (bool) => {
@@ -73,6 +74,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
         });
     };
     cardComponent.onFavorite = (bool) => {
@@ -80,6 +82,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
         });
     };
 
@@ -87,18 +90,6 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       this.unbind();
       this._element.remove();
       this._element = null;
-    };
-
-    popupCardComponent.onChangeFormData = (newObject) => {
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
-
-      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-        .then((newFilm) => {
-          cardComponent.update(newFilm);
-          cardComponent.partialUpdate();
-          cardComponent.unbind();
-          cardComponent.bind();
-        });
     };
 
     popupCardComponent.onTextareaKeyDown = (newObject) => {
@@ -198,15 +189,29 @@ const filterCardsFilms = (evt) => {
     getStaticCtx(statisticCtx, statData);
   }
 };
+/**
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const recordCountForFilters = (el, arr) =>{
+  const itemCounts = el.querySelectorAll(`.main-navigation__item-count`);
+
+  Array.from(itemCounts).forEach((itemCount) => {
+    const filterName = itemCount.parentElement.getAttribute(`href`);
+    itemCount.textContent = filterFilms(filterName, arr).length;
+  });
+};
 
 recordText(filmsCardsContainer, LoadingMoviesText);
 api.getMovies()
   .then((dataFilms) => {
+    renderFilters(filters, mainNav, Filter, filterCardsFilms);
     clearChildEl(filmsCardsContainer);
     initialCardsFilms = dataFilms;
     renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
     renderCards(filterFilms(filterNameTopRated, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraTop, CardExtra, PopupCard);
     renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+    recordCountForFilters(mainNav, initialCardsFilms);
   })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
@@ -216,4 +221,3 @@ api.getMovies()
     throw err;
   });
 
-renderFilters(filters, mainNav, Filter, filterCardsFilms);

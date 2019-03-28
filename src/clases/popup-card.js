@@ -69,7 +69,6 @@ export default class PopapCard extends Component {
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
 
-    this._onChangeFormData = null;
     this._onClosePopup = null;
     this._onTextareaKeyDown = null;
     this._onRadioRatingChange = null;
@@ -216,10 +215,6 @@ export default class PopapCard extends Component {
     `.trim();
   }
 
-  set onChangeFormData(fn) {
-    this._onChangeFormData = fn;
-  }
-
   set closePopup(fn) {
     this._onClosePopup = fn;
   }
@@ -253,23 +248,6 @@ export default class PopapCard extends Component {
     }
     newData.comments = [...copyCommments];
     return newData;
-  }
-
-  _updateData() {
-    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-    const newData = this._processForm(formData);
-
-    const copyCommments = this._comments.slice();
-    if (newData.comments.comment !== ``) {
-      copyCommments.push(newData.comments);
-    }
-    newData.comments = [...copyCommments];
-
-    if (typeof this._onChangeFormData === `function`) {
-      this._onChangeFormData(newData);
-    }
-
-    this.update(newData);
   }
 
   _onChangeRatingClick(evt) {

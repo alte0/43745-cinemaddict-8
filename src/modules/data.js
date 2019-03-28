@@ -18,21 +18,21 @@ const filters = [
     get href() {
       return this.caption;
     },
-    amount: `13`
+    amount: `0`
   },
   {
     caption: `History`,
     get href() {
       return this.caption;
     },
-    amount: `4`
+    amount: `0`
   },
   {
     caption: `Favorites`,
     get href() {
       return this.caption;
     },
-    amount: `8`
+    amount: `0`
   },
   {
     caption: `Stats`,
