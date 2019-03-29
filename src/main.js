@@ -1,7 +1,5 @@
 import {
-  // renderCards,
   renderFilters,
-  // randomOrderInArrayAndSplice,
   clearChildEl,
   calculateStat,
   filterFilms,
@@ -39,7 +37,7 @@ const statisticCtx = body.querySelector(`.statistic__chart`);
 const filmsCardsContainer = body.querySelector(`.films .films-list .films-list__container`);
 const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
-const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+const filmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
 const filterNameTopRated = `Most rated`;
 const filterNameTopCommented = `Most commented`;
 let initialCardsFilms;
@@ -108,6 +106,8 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
           textArea.value = ``;
           setUnBlockElem(textArea);
+          clearChildEl(filmsCardsContainerExtraMost);
+          renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
         })
         .catch(() => {
           setErrorStyle(textArea.parentElement);
@@ -146,6 +146,17 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           ratingInputs.forEach((elem) => {
             setUnBlockElem(elem);
           });
+        });
+    };
+
+    popupCardComponent.onCheckboxControlClick = (newObject) => {
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newDataFim) => {
+          cardComponent.update(newDataFim);
+          popupCardComponent.update(newDataFim);
+          recordCountForFilters(mainNav, initialCardsFilms);
         });
     };
 
@@ -210,7 +221,7 @@ api.getMovies()
     initialCardsFilms = dataFilms;
     renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
     renderCards(filterFilms(filterNameTopRated, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-    renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+    renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
     recordCountForFilters(mainNav, initialCardsFilms);
   })
   .catch((err) => {

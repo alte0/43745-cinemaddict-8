@@ -10,9 +10,7 @@ export default class Card extends CardCommon {
           <span class="film-card__year">${this._year}</span>
           <span class="film-card__duration">${this._duration}</span>
           ${Array.from(this._genres)
-            .map((genre) =>
-              `<span class="film-card__genre" > ${genre}</span > `.trim()
-            )
+            .map((genre) => `<span class="film-card__genre" > ${genre}</span > `.trim())
             .join(``)}
         </p>
         <img src="./${this._imgSource}" alt="${this._title}" class="film-card__poster">

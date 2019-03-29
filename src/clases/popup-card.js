@@ -72,11 +72,13 @@ export default class PopapCard extends Component {
     this._onClosePopup = null;
     this._onTextareaKeyDown = null;
     this._onRadioRatingChange = null;
+    this._onCheckboxControlClick = null;
 
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
     this._onChangeEmojiClick = this._onChangeEmojiClick.bind(this);
     this._onKeydownEnter = this._onKeydownEnter.bind(this);
+    this._onCheckboxControlInputClick = this._onCheckboxControlInputClick.bind(this);
     this._windowEscKeyDownHander = this._windowEscKeyDownHander.bind(this);
   }
 
@@ -226,6 +228,10 @@ export default class PopapCard extends Component {
     this._onRadioRatingChange = fn;
   }
 
+  set onCheckboxControlClick(fn) {
+    this._onCheckboxControlClick = fn;
+  }
+
   _onButtonClick() {
     if (typeof this._onClosePopup === `function`) {
       this._onClosePopup();
@@ -279,20 +285,20 @@ export default class PopapCard extends Component {
 
     if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
       const newData = this._collectFormData();
-      // const copyCommments = this._comments.slice();
 
       setDefaulStyle(parentEl);
       setBlockElem(target);
 
-      // if (newData.comments.comment !== ``) {
-      //   copyCommments.push(newData.comments);
-      // }
-
-      // newData.comments = [...copyCommments];
-
       if (typeof this._onTextareaKeyDown === `function`) {
         this._onTextareaKeyDown(newData);
       }
+    }
+  }
+
+  _onCheckboxControlInputClick() {
+    const newData = this._collectFormData();
+    if (typeof this._onCheckboxControlClick === `function`) {
+      this._onCheckboxControlClick(newData);
     }
   }
 
@@ -381,6 +387,15 @@ export default class PopapCard extends Component {
     this._element
       .querySelector(`.film-details__comment-input`)
       .addEventListener(`keydown`, this._onKeydownEnter);
+    this._element
+      .querySelector(`[name="watchlist"]`)
+      .addEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`[name="watched"]`)
+      .addEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`[name="favorite"]`)
+      .addEventListener(`click`, this._onCheckboxControlInputClick);
   }
 
   unbind() {
@@ -398,5 +413,14 @@ export default class PopapCard extends Component {
     this._element
       .querySelector(`.film-details__comment-input`)
       .removeEventListener(`keydown`, this._onKeydownEnter);
+    this._element
+      .querySelector(`[name="watchlist"]`)
+      .removeEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`[name="watched"]`)
+      .removeEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`[name="favorite"]`)
+      .removeEventListener(`click`, this._onCheckboxControlInputClick);
   }
 }

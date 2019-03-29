@@ -8,72 +8,6 @@ const renderTempate = (template, el = document.body) => {
 /**
  * @param {Array} arr
  * @param {HTMLElement} el
- * @param {Function} fn
- */
-const renderData = (arr, el, fn) => {
-  let template = ``;
-
-  for (const data of arr) {
-    template = template + fn(data);
-  }
-
-  renderTempate(template, el);
-};
-// /**
-//  * @param {Array} arr
-//  * @param {HTMLElement} el
-//  * @param {Function} ClsCard
-//  * @param {Function} ClsPopup
-//  */
-// const renderCards = (arr, el, ClsCard, ClsPopup) => {
-//   const body = document.body;
-
-//   for (const dataCard of arr) {
-//     const card = new ClsCard(dataCard);
-//     const popupCard = new ClsPopup(dataCard);
-
-//     card.popupOpen = () => {
-//       if (!body.querySelector(`.film-details`)) {
-//         popupCard.render(body);
-//       }
-//     };
-//     card.onAddToWatchList = (bool) => {
-//       dataCard.isWatchlist = bool;
-//       popupCard.update(dataCard);
-//     };
-//     card.onMarkAsWatched = (bool) => {
-//       dataCard.isWatched = bool;
-//       popupCard.update(dataCard);
-//     };
-//     card.onFavorite = (bool) => {
-//       dataCard.isFavorite = bool;
-//       popupCard.update(dataCard);
-//     };
-
-//     popupCard.closePopup = function () {
-//       this.unbind();
-//       this._element.remove();
-//       this._element = null;
-//     };
-
-//     popupCard.onChangeFormData = (newObject) => {
-//       const newDataCard = updateFilmData(arr, dataCard, newObject);
-
-//       api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-//         .then((newFilm)=> {
-//           card.update(newFilm);
-//           card.partialUpdate();
-//           card.unbind();
-//           card.bind();
-//         });
-//     };
-
-//     el.appendChild(card.render());
-//   }
-// };
-/**
- * @param {Array} arr
- * @param {HTMLElement} el
  * @param {Function} ClsFilter
  * @param {Function} filterCardsFilms
  */
@@ -98,38 +32,13 @@ const deleteEl = (container, deleteElement) => {
   container.removeChild(deleteElement);
 };
 /**
- * @param {Number} min
- * @param {Number} max
- * @return {Number}
- */
-const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const getRandomBoolean = () => Math.random() >= 0.5;
-/**
- * @param {Array} arr
- * @param {Boolean} isTwo
- * @return {Array} copyArr
- */
-const randomOrderInArrayAndSplice = (arr, isTwo = false) => {
-  const copyArr = arr.slice();
-
-  copyArr.sort((a, b) => a.title.length > b.title.length);
-
-  if (isTwo) {
-    copyArr.splice(2);
-  } else {
-    const randomNum = Math.random() * copyArr.length - 1;
-    copyArr.splice(0, randomNum);
-  }
-  return copyArr;
-};
-/**
  * @param {String} template
  * @return {HTMLElement} HTMLElement
  */
 const createElement = (template) => {
-  const wrapperTemplate = document.createElement(`div`);
+  const wrapperTemplate = document.createElement(`template`);
   wrapperTemplate.innerHTML = template;
-  return wrapperTemplate.firstChild;
+  return wrapperTemplate.content.firstChild;
 };
 /**
  * @param {Array} arr
@@ -271,13 +180,8 @@ const setErrorStyle = (el, bool = true) => {
   el.classList.add(`shake`);
 };
 export {
-  getRndInteger,
   clearChildEl,
-  renderData,
-  // renderCards,
   renderFilters,
-  getRandomBoolean,
-  randomOrderInArrayAndSplice,
   createElement,
   calculateStat,
   deleteEl,
