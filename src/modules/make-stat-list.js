@@ -13,7 +13,7 @@ export default (data, el) => {
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text">${moment.duration(data.duration).hours()} <span class="statistic__item-description">h</span>${moment.duration(data.duration).minutes()} <span class="statistic__item-description">m</span></p>
+      <p class="statistic__item-text">${moment.duration(data.duration, `minutes`).hours()} <span class="statistic__item-description">h</span>${moment.duration(data.duration, `minutes`).minutes()} <span class="statistic__item-description">m</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Top genre</h4>

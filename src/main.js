@@ -1,12 +1,16 @@
 import {
-  renderCards,
   renderFilters,
-  randomOrderInArrayAndSplice,
   clearChildEl,
   calculateStat,
-  filterFilms
+  filterFilms,
+  recordText,
+  updateFilmData,
+  setDefaulStyle,
+  setBlockElem,
+  setUnBlockElem,
+  setErrorStyle
 } from "./modules/util";
-import {filters, cards} from "./modules/data";
+import {filters} from "./modules/data";
 import Card from "./clases/card";
 import CardExtra from "./clases/card-extra";
 import PopupCard from "./clases/popup-card";
@@ -14,8 +18,15 @@ import Filter from "./clases/component-filter";
 import getStaticCtx from "./modules/statistic";
 import renderStatList from "./modules/make-stat-list";
 import renderStatRankLabel from "./modules/make-stat-rank-label";
+import {API} from "./clases/api";
 
-const initialCardsFilms = cards;
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
+const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
+
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+
+const LoadingMoviesText = `Loading movies...`;
+const LoadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
@@ -26,7 +37,133 @@ const statisticCtx = body.querySelector(`.statistic__chart`);
 const filmsCardsContainer = body.querySelector(`.films .films-list .films-list__container`);
 const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
-const ffilmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+const filmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+const filterNameTopRated = `Most rated`;
+const filterNameTopCommented = `Most commented`;
+let initialCardsFilms;
+
+/**
+ * @param {Array} arr
+ * @param {HTMLElement} el
+ * @param {Function} ClsCard
+ * @param {Function} ClsPopup
+ */
+const renderCards = (arr, el, ClsCard, ClsPopup) => {
+
+  for (const dataCard of arr) {
+    const cardComponent = new ClsCard(dataCard);
+    const popupCardComponent = new ClsPopup(dataCard);
+
+    cardComponent.popupOpen = () => {
+      if (!body.querySelector(`.film-details`)) {
+        popupCardComponent.render(body);
+      }
+    };
+    cardComponent.onAddToWatchList = (bool) => {
+      dataCard.isWatchlist = bool;
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
+        });
+    };
+    cardComponent.onMarkAsWatched = (bool) => {
+      dataCard.isWatched = bool;
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
+        });
+    };
+    cardComponent.onFavorite = (bool) => {
+      dataCard.isFavorite = bool;
+      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+        .then((newFilm) => {
+          popupCardComponent.update(newFilm);
+          recordCountForFilters(mainNav, initialCardsFilms);
+        });
+    };
+
+    popupCardComponent.closePopup = function () {
+      this.unbind();
+      this._element.remove();
+      this._element = null;
+    };
+
+    popupCardComponent.onTextareaKeyDown = (newObject) => {
+      const textArea = body.querySelector(`.film-details__comment-input`);
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newDataFim) => {
+          cardComponent.update(newDataFim);
+          cardComponent.partialUpdate();
+          cardComponent.unbind();
+          cardComponent.bind();
+
+          popupCardComponent.update(newDataFim);
+          popupCardComponent.partialUpdateComments();
+
+          textArea.value = ``;
+          setUnBlockElem(textArea);
+          clearChildEl(filmsCardsContainerExtraMost);
+          renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+        })
+        .catch(() => {
+          setErrorStyle(textArea.parentElement);
+          setUnBlockElem(textArea);
+        });
+    };
+
+    popupCardComponent.onRadioRatingChange = (newObject, evt) => {
+      const target = evt.target;
+      const ratingInputs = evt.target.parentElement.querySelectorAll(`[name="score"]`);
+      const ratingLabels = evt.target.parentElement.querySelectorAll(`.film-details__user-rating-label`);
+      const nextEl = target.nextElementSibling;
+
+      ratingLabels.forEach((elem) => {
+        setDefaulStyle(elem, false);
+      });
+      ratingInputs.forEach((elem) => {
+        setBlockElem(elem);
+      });
+
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+      .then((newDataFim) => {
+        cardComponent.update(newDataFim);
+
+        popupCardComponent.update(newDataFim);
+        popupCardComponent.partialUpdateRating();
+
+        ratingInputs.forEach((elem) => {
+          setUnBlockElem(elem);
+        });
+      })
+        .catch(() => {
+          setErrorStyle(nextEl, false);
+          ratingInputs.forEach((elem) => {
+            setUnBlockElem(elem);
+          });
+        });
+    };
+
+    popupCardComponent.onCheckboxControlClick = (newObject) => {
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newDataFim) => {
+          cardComponent.update(newDataFim);
+          popupCardComponent.update(newDataFim);
+          recordCountForFilters(mainNav, initialCardsFilms);
+        });
+    };
+
+    el.appendChild(cardComponent.render());
+  }
+};
+
 /**
  * @param {Event} evt
  */
@@ -63,9 +200,35 @@ const filterCardsFilms = (evt) => {
     getStaticCtx(statisticCtx, statData);
   }
 };
+/**
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const recordCountForFilters = (el, arr) =>{
+  const itemCounts = el.querySelectorAll(`.main-navigation__item-count`);
 
-renderFilters(filters, mainNav, Filter, filterCardsFilms);
-renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
-renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-renderCards(randomOrderInArrayAndSplice(initialCardsFilms, true), ffilmsCardsContainerExtraMost, CardExtra, PopupCard);
+  Array.from(itemCounts).forEach((itemCount) => {
+    const filterName = itemCount.parentElement.getAttribute(`href`);
+    itemCount.textContent = filterFilms(filterName, arr).length;
+  });
+};
+
+recordText(filmsCardsContainer, LoadingMoviesText);
+api.getMovies()
+  .then((dataFilms) => {
+    renderFilters(filters, mainNav, Filter, filterCardsFilms);
+    clearChildEl(filmsCardsContainer);
+    initialCardsFilms = dataFilms;
+    renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
+    renderCards(filterFilms(filterNameTopRated, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+    renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+    recordCountForFilters(mainNav, initialCardsFilms);
+  })
+  .catch((err) => {
+    clearChildEl(filmsCardsContainer);
+    recordText(filmsCardsContainer, LoadingMoviesErorText);
+    // eslint-disable-next-line no-console
+    console.error(`fetch error: ${err}`);
+    throw err;
+  });
 

@@ -8,69 +8,6 @@ const renderTempate = (template, el = document.body) => {
 /**
  * @param {Array} arr
  * @param {HTMLElement} el
- * @param {Function} fn
- */
-const renderData = (arr, el, fn) => {
-  let template = ``;
-
-  for (const data of arr) {
-    template = template + fn(data);
-  }
-
-  renderTempate(template, el);
-};
-/**
- * @param {Array} arr
- * @param {HTMLElement} el
- * @param {Function} ClsCard
- * @param {Function} ClsPopup
- */
-const renderCards = (arr, el, ClsCard, ClsPopup) => {
-  const body = document.body;
-
-  for (const dataCard of arr) {
-    const card = new ClsCard(dataCard);
-    const popupCard = new ClsPopup(dataCard);
-
-    card.popupOpen = () => {
-      if (!body.querySelector(`.film-details`)) {
-        popupCard.render(body);
-      }
-    };
-    card.onAddToWatchList = (bool) => {
-      dataCard.watchlist = bool;
-      popupCard.update(dataCard);
-    };
-    card.onMarkAsWatched = (bool) => {
-      dataCard.watched = bool;
-      popupCard.update(dataCard);
-    };
-    card.onFavorite = (bool) => {
-      dataCard.favorite = bool;
-      popupCard.update(dataCard);
-    };
-
-    popupCard.closePopup = function () {
-      this.unbind();
-      this._element.remove();
-      this._element = null;
-    };
-
-    popupCard.onChangeFormData = (newObject) => {
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
-
-      card.update(newDataCard);
-      card.partialUpdate();
-      card.unbind();
-      card.bind();
-    };
-
-    el.appendChild(card.render());
-  }
-};
-/**
- * @param {Array} arr
- * @param {HTMLElement} el
  * @param {Function} ClsFilter
  * @param {Function} filterCardsFilms
  */
@@ -95,38 +32,13 @@ const deleteEl = (container, deleteElement) => {
   container.removeChild(deleteElement);
 };
 /**
- * @param {Number} min
- * @param {Number} max
- * @return {Number}
- */
-const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const getRandomBoolean = () => Math.random() >= 0.5;
-/**
- * @param {Array} arr
- * @param {Boolean} isTwo
- * @return {Array} copyArr
- */
-const randomOrderInArrayAndSplice = (arr, isTwo = false) => {
-  const copyArr = arr.slice();
-
-  copyArr.sort((a, b) => a.name.length > b.name.length);
-
-  if (isTwo) {
-    copyArr.splice(2);
-  } else {
-    const randomNum = Math.random() * copyArr.length - 1;
-    copyArr.splice(0, randomNum);
-  }
-  return copyArr;
-};
-/**
  * @param {String} template
  * @return {HTMLElement} HTMLElement
  */
 const createElement = (template) => {
-  const wrapperTemplate = document.createElement(`div`);
+  const wrapperTemplate = document.createElement(`template`);
   wrapperTemplate.innerHTML = template;
-  return wrapperTemplate.firstChild;
+  return wrapperTemplate.content.firstChild;
 };
 /**
  * @param {Array} arr
@@ -135,10 +47,7 @@ const createElement = (template) => {
 const calculateStat = (arr) => {
   let initiaStaticList = {
     watched: 0,
-    duration: {
-      minutes: 0,
-      hours: 0,
-    },
+    duration: 0,
     genres: [],
     topGenre: `-`
   };
@@ -181,12 +90,9 @@ const calculateStat = (arr) => {
         {},
         initiaStaticList,
         {
-          watched: initiaStaticList.watched + film.watched,
-          duration: {
-            hours: film.watched ? initiaStaticList.duration.hours + film.duration.hours : initiaStaticList.duration.hours,
-            minutes: film.watched ? initiaStaticList.duration.minutes + film.duration.minutes : initiaStaticList.duration.minutes,
-          },
-          genres: initiaStaticList.watched ? initiaStaticList.genres.concat(...film.genres) : initiaStaticList.genres
+          watched: initiaStaticList.watched + film.isWatched,
+          duration: film.isWatched ? initiaStaticList.duration + film.duration : initiaStaticList.duration,
+          genres: film.isWatched ? initiaStaticList.genres.concat(...film.genres) : initiaStaticList.genres
         }
     );
   }
@@ -206,11 +112,15 @@ const filterFilms = (filterName, initialFilms) => {
     case `#all`:
       return initialFilms;
     case `#watchlist`:
-      return initialFilms.filter((film) => film.watchlist);
+      return initialFilms.filter((film) => film.isWatchlist);
     case `#history`:
-      return initialFilms.filter((film) => film.watched);
+      return initialFilms.filter((film) => film.isWatched);
     case `#favorites`:
-      return initialFilms.filter((film) => film.favorite);
+      return initialFilms.filter((film) => film.isFavorite);
+    case `Most rated`:
+      return [...initialFilms].sort((a, b) => b.rating - a.rating);
+    case `Most commented`:
+      return [...initialFilms].sort((a, b) => b.comments.length - a.comments.length);
     default:
       return initialFilms;
   }
@@ -223,21 +133,64 @@ const filterFilms = (filterName, initialFilms) => {
  */
 const updateFilmData = (films, film, newDataFilm) => {
   const index = films.findIndex((item) => item === film);
-  films[index] = Object.assign({}, film, newDataFilm);
+  films[index] = Object.assign(film, newDataFilm);
   return films[index];
 };
-
+/**
+ * @param {HTMLElement} el
+ * @param {String} str
+ */
+const recordText = (el, str) => {
+  el.textContent = str;
+};
+/**
+ * @param {HTMLElement} el
+ */
+const setBlockElem = (el) => {
+  el.disabled = true;
+};
+/**
+ * @param {HTMLElement} el
+ */
+const setUnBlockElem = (el) => {
+  el.disabled = false;
+};
+/**
+ * @param {HTMLElement} el
+ * @param {Boolean} bool
+ */
+const setDefaulStyle = (el, bool = true) => {
+  if (bool) {
+    el.style.border = ``;
+  } else {
+    el.style.backgroundColor = ``;
+  }
+  el.classList.remove(`shake`);
+};
+/**
+ * @param {HTMLElement} el
+ * @param {Boolean} bool
+ */
+const setErrorStyle = (el, bool = true) => {
+  if (bool) {
+    el.style.border = `5px solid red`;
+  } else {
+    el.style.backgroundColor = `red`;
+  }
+  el.classList.add(`shake`);
+};
 export {
-  getRndInteger,
   clearChildEl,
-  renderData,
-  renderCards,
   renderFilters,
-  getRandomBoolean,
-  randomOrderInArrayAndSplice,
   createElement,
   calculateStat,
   deleteEl,
   renderTempate,
-  filterFilms
+  filterFilms,
+  recordText,
+  updateFilmData,
+  setBlockElem,
+  setUnBlockElem,
+  setDefaulStyle,
+  setErrorStyle
 };
