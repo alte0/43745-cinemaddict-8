@@ -38,7 +38,7 @@ const deleteEl = (container, deleteElement) => {
 const createElement = (template) => {
   const wrapperTemplate = document.createElement(`template`);
   wrapperTemplate.innerHTML = template;
-  return wrapperTemplate.content.firstChild;
+  return wrapperTemplate.content.cloneNode(true).firstChild;
 };
 /**
  * @param {Array} arr
