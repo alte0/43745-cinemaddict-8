@@ -19,11 +19,16 @@ import getStaticCtx from "./modules/statistic";
 import renderStatList from "./modules/make-stat-list";
 import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
+import {Provider} from "./clases/provider";
+import {Store} from "./clases/store";
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
+const FILMS_STORE_KEY = `films-store-key-dev`;
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+const store = new Store({key: FILMS_STORE_KEY, storage: localStorage});
+const provider = new Provider({api, store});
 
 const LoadingMoviesText = `Loading movies...`;
 const LoadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
@@ -61,7 +66,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     };
     cardComponent.onAddToWatchList = (bool) => {
       dataCard.isWatchlist = bool;
-      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+      provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
@@ -69,7 +74,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     };
     cardComponent.onMarkAsWatched = (bool) => {
       dataCard.isWatched = bool;
-      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+      provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
@@ -77,7 +82,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     };
     cardComponent.onFavorite = (bool) => {
       dataCard.isFavorite = bool;
-      api.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+      provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
@@ -94,7 +99,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       const textArea = body.querySelector(`.film-details__comment-input`);
       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
-      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
         .then((newDataFim) => {
           cardComponent.update(newDataFim);
           cardComponent.partialUpdate();
@@ -130,7 +135,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
-      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
       .then((newDataFim) => {
         cardComponent.update(newDataFim);
 
@@ -152,7 +157,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     popupCardComponent.onCheckboxControlClick = (newObject) => {
       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
-      api.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
         .then((newDataFim) => {
           cardComponent.update(newDataFim);
           popupCardComponent.update(newDataFim);
@@ -213,8 +218,16 @@ const recordCountForFilters = (el, arr) =>{
   });
 };
 
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks();
+});
+
 recordText(filmsCardsContainer, LoadingMoviesText);
-api.getMovies()
+provider.getMovies()
   .then((dataFilms) => {
     renderFilters(filters, mainNav, Filter, filterCardsFilms);
     clearChildEl(filmsCardsContainer);
