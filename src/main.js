@@ -38,6 +38,8 @@ const countStartShowMovies = 0;
 const countEndShowMovies = 5;
 const countEndShowMoviesExtra = 2;
 const body = document.body;
+const searchForm = body.querySelector(`.search`);
+const searchField = body.querySelector(`.search__field`);
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
 const btnShowMore = films.querySelector(`.films-list__show-more`);
@@ -206,7 +208,12 @@ const filterCardsFilms = (evt) => {
     } else {
       statistic.classList.add(`visually-hidden`);
       films.classList.remove(`visually-hidden`);
-      renderCards(filterFilms(filterName, initialCardsFilms), filmsCardsContainer, Card, PopupCard);
+      btnShowMore.style = `display: none`;
+      renderCards(sliceForShowMovies(filterFilms(filterName, initialCardsFilms), countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
+    }
+
+    if (filterName === `#all`) {
+      btnShowMore.style = ``;
     }
   }
 
@@ -231,6 +238,7 @@ const recordCountForFilters = (el, arr) =>{
     itemCount.textContent = filterFilms(filterName, arr).length;
   });
 };
+
 const onButtonClick = (evt) => {
   const count = 5;
   const isConditionEnd = () => countEndNextShowMovies >= initialCardsFilms.length;
@@ -248,12 +256,42 @@ const onButtonClick = (evt) => {
   }
 };
 
+const onInputSearchInput = (evt) => {
+  const textSearch = evt.target.value;
+
+  clearChildEl(filmsCardsContainer);
+
+  if (textSearch === ``) {
+    renderCards(sliceForShowMovies(initialCardsFilms, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
+    btnShowMore.style = ``;
+    body.querySelector(`.main-navigation__item`).classList.add(`main-navigation__item--active`);
+  } else {
+    if (body.querySelector(`.main-navigation__item--active`)) {
+      const navItems = body.querySelectorAll(`.main-navigation__item`);
+      btnShowMore.style = `display: none`;
+      for (const navItem of navItems) {
+        navItem.classList.remove(`main-navigation__item--active`);
+      }
+    }
+
+    const filteredMovies = filterFilms(`searchTitle`, initialCardsFilms, textSearch);
+    renderCards(filteredMovies, filmsCardsContainer, Card, PopupCard);
+  }
+
+
+};
+
 window.addEventListener(`offline`, () => {
   document.title = `${document.title}[OFFLINE]`;
 });
 window.addEventListener(`online`, () => {
   document.title = document.title.split(`[OFFLINE]`)[0];
   provider.syncTasks();
+});
+btnShowMore.addEventListener(`click`, onButtonClick);
+searchField.addEventListener(`input`, onInputSearchInput);
+searchForm.addEventListener(`submit`, (evt) => {
+  evt.preventDefault();
 });
 
 recordText(filmsCardsContainer, LoadingMoviesText);
@@ -275,4 +313,3 @@ provider.getMovies()
     throw err;
   });
 
-btnShowMore.addEventListener(`click`, onButtonClick);

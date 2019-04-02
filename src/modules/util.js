@@ -105,9 +105,10 @@ const calculateStat = (arr) => {
 /**
  * @param {String} filterName
  * @param {Array} initialFilms
+ * @param {String} text
  * @return {Array}
  */
-const filterFilms = (filterName, initialFilms) => {
+const filterFilms = (filterName, initialFilms, text = ``) => {
   switch (filterName) {
     case `#all`:
       return initialFilms;
@@ -117,6 +118,12 @@ const filterFilms = (filterName, initialFilms) => {
       return initialFilms.filter((film) => film.isWatched);
     case `#favorites`:
       return initialFilms.filter((film) => film.isFavorite);
+    case `searchTitle`:
+      const regexpSearchText = new RegExp(`${text}`, `gi`);
+      return initialFilms.filter((film) => {
+        const resultSearch = film.title.match(regexpSearchText);
+        return resultSearch !== null && resultSearch.length > 0;
+      });
     case `Most rated`:
       return [...initialFilms].sort((a, b) => b.rating - a.rating);
     case `Most commented`:
