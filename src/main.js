@@ -8,7 +8,8 @@ import {
   setDefaulStyle,
   setBlockElem,
   setUnBlockElem,
-  setErrorStyle
+  setErrorStyle,
+  sliceForShowMovies
 } from "./modules/util";
 import {filters} from "./modules/data";
 import Card from "./clases/card";
@@ -32,9 +33,13 @@ const provider = new Provider({api, store});
 
 const LoadingMoviesText = `Loading movies...`;
 const LoadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
+const countStartShowMovies = 0;
+const countEndShowMovies = 5;
+const countEndShowMoviesExtra = 2;
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
+const btnShowMore = films.querySelector(`.films-list__show-more`);
 const statistic = body.querySelector(`.statistic`);
 const statisticRank = body.querySelector(`.statistic__rank`);
 const statisticList = body.querySelector(`.statistic__text-list`);
@@ -46,6 +51,7 @@ const filmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(
 const filterNameTopRated = `Most rated`;
 const filterNameTopCommented = `Most commented`;
 let initialCardsFilms;
+let countEndNextShowMovies;
 
 /**
  * @param {Array} arr
@@ -217,6 +223,22 @@ const recordCountForFilters = (el, arr) =>{
     itemCount.textContent = filterFilms(filterName, arr).length;
   });
 };
+const onButtonClick = (evt) => {
+  const count = 5;
+  const isConditionEnd = () => countEndNextShowMovies >= initialCardsFilms.length;
+
+  if (countEndNextShowMovies === undefined) {
+    countEndNextShowMovies = countEndShowMovies;
+  }
+
+  if (!isConditionEnd()) {
+    renderCards(sliceForShowMovies(initialCardsFilms, countEndNextShowMovies, countEndNextShowMovies = countEndNextShowMovies + count), filmsCardsContainer, Card, PopupCard);
+
+    if (isConditionEnd()) {
+      evt.target.style = `display: none`;
+    }
+  }
+};
 
 window.addEventListener(`offline`, () => {
   document.title = `${document.title}[OFFLINE]`;
@@ -232,9 +254,9 @@ provider.getMovies()
     renderFilters(filters, mainNav, Filter, filterCardsFilms);
     clearChildEl(filmsCardsContainer);
     initialCardsFilms = dataFilms;
-    renderCards(initialCardsFilms, filmsCardsContainer, Card, PopupCard);
-    renderCards(filterFilms(filterNameTopRated, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-    renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+    renderCards(sliceForShowMovies(initialCardsFilms, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
+    renderCards(sliceForShowMovies(filterFilms(filterNameTopRated, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+    renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
     recordCountForFilters(mainNav, initialCardsFilms);
   })
   .catch((err) => {
@@ -245,3 +267,4 @@ provider.getMovies()
     throw err;
   });
 
+btnShowMore.addEventListener(`click`, onButtonClick);

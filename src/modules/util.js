@@ -179,6 +179,8 @@ const setErrorStyle = (el, bool = true) => {
   }
   el.classList.add(`shake`);
 };
+const sliceForShowMovies = (arr, start = 0, end) => arr.slice(start, end);
+
 export {
   clearChildEl,
   renderFilters,
@@ -192,5 +194,6 @@ export {
   setBlockElem,
   setUnBlockElem,
   setDefaulStyle,
-  setErrorStyle
+  setErrorStyle,
+  sliceForShowMovies
 };
