@@ -1,5 +1,7 @@
 import CardCommon from "./сomponent-card";
 
+const maxDescription = 137;
+
 export default class Card extends CardCommon {
   get template() {
     return `
@@ -14,7 +16,7 @@ export default class Card extends CardCommon {
             .join(``)}
         </p>
         <img src="./${this._imgSource}" alt="${this._title}" class="film-card__poster">
-        <p class="film-card__description">${this._description}.</p>
+        <p class="film-card__description">${this._description.slice(0, maxDescription).trim()}${this._description.length > maxDescription ? `...` : ``}</p>
         ${this._createBtnOpenComments(this._comments)}
 
         <form class="film-card__controls">

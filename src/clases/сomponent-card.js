@@ -61,7 +61,7 @@ export default class ComponentCard extends Component {
   _onButtonAddWatchlistClick(evt) {
     evt.preventDefault();
     if (typeof this._onAddToWatchList === `function`) {
-      this._isWatchlist = !this._isWatchlist;
+      this._isWatchlist = true;
       this._onAddToWatchList(this._isWatchlist);
     }
   }
@@ -69,7 +69,7 @@ export default class ComponentCard extends Component {
   _onButtonMarkAsWatchedClick(evt) {
     evt.preventDefault();
     if (typeof this._onMarkAsWatched === `function`) {
-      this._isWatched = !this._isWatched;
+      this._isWatched = true;
       this._onMarkAsWatched(this._isWatched);
     }
   }

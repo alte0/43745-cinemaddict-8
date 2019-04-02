@@ -22,6 +22,7 @@ import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
 import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
+import {showInfoMessage} from "./modules/showUserMessage";
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
@@ -76,6 +77,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
+          showInfoMessage(`Added to watch list!`);
         });
     };
     cardComponent.onMarkAsWatched = (bool) => {
@@ -84,6 +86,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
+          showInfoMessage(`Added to viewed!`);
         });
     };
     cardComponent.onFavorite = (bool) => {
@@ -92,6 +95,11 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
+          if (dataCard.isFavorite) {
+            showInfoMessage(`Added to favorites!`);
+          } else {
+            showInfoMessage(`Removed from favorites!`);
+          }
         });
     };
 
