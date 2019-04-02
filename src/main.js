@@ -21,7 +21,7 @@ import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
 import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
-import {showInfoMessage, typeMessage} from "./modules/showUserMessage";
+import {showInfoMessage, TypeMessage} from "./modules/showUserMessage";
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
@@ -54,6 +54,8 @@ const filmsCardsContainer = body.querySelector(`.films .films-list .films-list__
 const filmsCardsContainerExtras = body.querySelectorAll(`.films .films-list--extra`);
 const filmsCardsContainerExtraTop = filmsCardsContainerExtras[0].querySelector(`.films-list__container`);
 const filmsCardsContainerExtraMost = filmsCardsContainerExtras[1].querySelector(`.films-list__container`);
+const footerStat = body.querySelector(`.footer__statistics`);
+const profile = body.querySelector(`.profile`);
 const filterNameTopRated = `Most rated`;
 const filterNameTopCommented = `Most commented`;
 let initialCardsFilms;
@@ -82,7 +84,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(typeMessage.SUCCESS, addToWatchListText);
+          showInfoMessage(TypeMessage.SUCCESS, addToWatchListText);
         });
     };
     cardComponent.onMarkAsWatched = (bool) => {
@@ -91,7 +93,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(typeMessage.SUCCESS, addToViewedText);
+          showInfoMessage(TypeMessage.SUCCESS, addToViewedText);
         });
     };
     cardComponent.onFavorite = (bool) => {
@@ -101,9 +103,9 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
           if (dataCard.isFavorite) {
-            showInfoMessage(typeMessage.SUCCESS, addToFavoritesText);
+            showInfoMessage(TypeMessage.SUCCESS, addToFavoritesText);
           } else {
-            showInfoMessage(typeMessage.SUCCESS, removeFavoritesText);
+            showInfoMessage(TypeMessage.SUCCESS, removeFavoritesText);
           }
         });
     };
@@ -283,6 +285,28 @@ const onInputSearchInput = (evt) => {
 
 
 };
+/**
+ * @param {Array} arr
+ */
+const setRankUser = (arr) => {
+  const RankType = {
+    novice: `novice`,
+    fan: `fan`,
+    movieBuff: `movie buff`,
+  };
+  const length = arr.length;
+  let rank = ``;
+
+  if (length > 1 && length <= 10) {
+    rank = RankType.novice;
+  } else if (length > 11 && length <= 20) {
+    rank = RankType.fan;
+  } else if (length > 21) {
+    rank = RankType.movieBuff;
+  }
+
+  profile.innerHTML = `<p class="profile__rating">${rank}</p>`;
+};
 
 window.addEventListener(`offline`, () => {
   document.title = `${document.title}[OFFLINE]`;
@@ -299,7 +323,7 @@ searchForm.addEventListener(`submit`, (evt) => {
 
 provider.getMovies()
 .then((dataFilms) => {
-  showInfoMessage(typeMessage.INFO, loadingMoviesText);
+  showInfoMessage(TypeMessage.INFO, loadingMoviesText);
   renderFilters(filters, mainNav, Filter, filterCardsFilms);
   clearChildEl(filmsCardsContainer);
   initialCardsFilms = dataFilms;
@@ -307,10 +331,12 @@ provider.getMovies()
   renderCards(sliceForShowMovies(filterFilms(filterNameTopRated, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraTop, CardExtra, PopupCard);
   renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
   recordCountForFilters(mainNav, initialCardsFilms);
+  footerStat.innerHTML = `<p>${initialCardsFilms.length} movies inside</p>`;
+  setRankUser(initialCardsFilms);
 })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
-    showInfoMessage(typeMessage.ERROR, loadingMoviesErorText);
+    showInfoMessage(TypeMessage.ERROR, loadingMoviesErorText);
     // eslint-disable-next-line no-console
     console.error(`fetch error: ${err}`);
     throw err;

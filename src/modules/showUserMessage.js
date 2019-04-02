@@ -30,11 +30,11 @@ const showInfoMessage = (type, message, title = ``) => {
   }
 };
 
-const typeMessage = {
+const TypeMessage = {
   INFO: `info`,
   SUCCESS: `success`,
   WARNING: `warning`,
   ERROR: `error`
 };
 
-export {showInfoMessage, typeMessage};
+export {showInfoMessage, TypeMessage};
