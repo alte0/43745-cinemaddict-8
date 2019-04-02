@@ -31,8 +31,12 @@ const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 const store = new Store({key: FILMS_STORE_KEY, storage: localStorage});
 const provider = new Provider({api, store});
 
-const LoadingMoviesText = `Loading movies...`;
-const LoadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
+const loadingMoviesText = `Loading movies...`;
+const loadingMoviesErorText = `Something went wrong while loading movies. Check your connection or try again later`;
+const addToWatchListText = `Added to watch list!`;
+const addToViewedText = `Added to viewed!`;
+const addToFavoritesText = `Added to favorites!`;
+const removeFavoritesText = `Removed from favorites!`;
 const countStartShowMovies = 0;
 const countEndShowMovies = 5;
 const countEndShowMoviesExtra = 2;
@@ -78,7 +82,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(typeMessage.SUCCESS, `Added to watch list!`);
+          showInfoMessage(typeMessage.SUCCESS, addToWatchListText);
         });
     };
     cardComponent.onMarkAsWatched = (bool) => {
@@ -87,7 +91,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(typeMessage.SUCCESS, `Added to viewed!`);
+          showInfoMessage(typeMessage.SUCCESS, addToViewedText);
         });
     };
     cardComponent.onFavorite = (bool) => {
@@ -97,9 +101,9 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
           if (dataCard.isFavorite) {
-            showInfoMessage(typeMessage.SUCCESS, `Added to favorites!`);
+            showInfoMessage(typeMessage.SUCCESS, addToFavoritesText);
           } else {
-            showInfoMessage(typeMessage.SUCCESS, `Removed from favorites!`);
+            showInfoMessage(typeMessage.SUCCESS, removeFavoritesText);
           }
         });
     };
@@ -293,20 +297,20 @@ searchForm.addEventListener(`submit`, (evt) => {
   evt.preventDefault();
 });
 
-showInfoMessage(typeMessage.INFO, LoadingMoviesText);
 provider.getMovies()
-  .then((dataFilms) => {
-    renderFilters(filters, mainNav, Filter, filterCardsFilms);
-    clearChildEl(filmsCardsContainer);
-    initialCardsFilms = dataFilms;
-    renderCards(sliceForShowMovies(initialCardsFilms, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
-    renderCards(sliceForShowMovies(filterFilms(filterNameTopRated, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraTop, CardExtra, PopupCard);
-    renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
-    recordCountForFilters(mainNav, initialCardsFilms);
-  })
+.then((dataFilms) => {
+  showInfoMessage(typeMessage.INFO, loadingMoviesText);
+  renderFilters(filters, mainNav, Filter, filterCardsFilms);
+  clearChildEl(filmsCardsContainer);
+  initialCardsFilms = dataFilms;
+  renderCards(sliceForShowMovies(initialCardsFilms, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
+  renderCards(sliceForShowMovies(filterFilms(filterNameTopRated, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraTop, CardExtra, PopupCard);
+  renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+  recordCountForFilters(mainNav, initialCardsFilms);
+})
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
-    showInfoMessage(typeMessage.ERROR, LoadingMoviesErorText);
+    showInfoMessage(typeMessage.ERROR, loadingMoviesErorText);
     // eslint-disable-next-line no-console
     console.error(`fetch error: ${err}`);
     throw err;
