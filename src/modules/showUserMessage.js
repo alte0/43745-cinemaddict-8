@@ -5,7 +5,7 @@ toastr.options = {
   "debug": false,
   "newestOnTop": false,
   "progressBar": true,
-  "positionClass": `toast-bottom-center`,
+  "positionClass": `toast-top-center`,
   "preventDuplicates": false,
   "onclick": null,
   "showDuration": `300`,
@@ -17,13 +17,24 @@ toastr.options = {
   "showMethod": `fadeIn`,
   "hideMethod": `fadeOut`
 };
-
-const showInfoMessage = (message, title = ``) => {
+/**
+ * @param {String} type (`info`, `success`, `Warning`, `Error`)
+ * @param {String} message
+ * @param {String} title
+ */
+const showInfoMessage = (type, message, title = ``) => {
   if (title) {
-    toastr[`info`](message, title);
+    toastr[type](message, title);
   } else {
-    toastr[`info`](message);
+    toastr[type](message);
   }
 };
 
-export {showInfoMessage};
+const typeMessage = {
+  INFO: `info`,
+  SUCCESS: `success`,
+  WARNING: `warning`,
+  ERROR: `error`
+};
+
+export {showInfoMessage, typeMessage};
