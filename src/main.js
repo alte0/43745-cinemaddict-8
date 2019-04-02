@@ -3,7 +3,6 @@ import {
   clearChildEl,
   calculateStat,
   filterFilms,
-  recordText,
   updateFilmData,
   setDefaulStyle,
   setBlockElem,
@@ -22,7 +21,7 @@ import renderStatRankLabel from "./modules/make-stat-rank-label";
 import {API} from "./clases/api";
 import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
-import {showInfoMessage} from "./modules/showUserMessage";
+import {showInfoMessage, typeMessage} from "./modules/showUserMessage";
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
@@ -79,7 +78,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(`Added to watch list!`);
+          showInfoMessage(typeMessage.SUCCESS, `Added to watch list!`);
         });
     };
     cardComponent.onMarkAsWatched = (bool) => {
@@ -88,7 +87,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newFilm) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
-          showInfoMessage(`Added to viewed!`);
+          showInfoMessage(typeMessage.SUCCESS, `Added to viewed!`);
         });
     };
     cardComponent.onFavorite = (bool) => {
@@ -98,9 +97,9 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           popupCardComponent.update(newFilm);
           recordCountForFilters(mainNav, initialCardsFilms);
           if (dataCard.isFavorite) {
-            showInfoMessage(`Added to favorites!`);
+            showInfoMessage(typeMessage.SUCCESS, `Added to favorites!`);
           } else {
-            showInfoMessage(`Removed from favorites!`);
+            showInfoMessage(typeMessage.SUCCESS, `Removed from favorites!`);
           }
         });
     };
@@ -294,7 +293,7 @@ searchForm.addEventListener(`submit`, (evt) => {
   evt.preventDefault();
 });
 
-recordText(filmsCardsContainer, LoadingMoviesText);
+showInfoMessage(typeMessage.INFO, LoadingMoviesText);
 provider.getMovies()
   .then((dataFilms) => {
     renderFilters(filters, mainNav, Filter, filterCardsFilms);
@@ -307,7 +306,7 @@ provider.getMovies()
   })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
-    recordText(filmsCardsContainer, LoadingMoviesErorText);
+    showInfoMessage(typeMessage.ERROR, LoadingMoviesErorText);
     // eslint-disable-next-line no-console
     console.error(`fetch error: ${err}`);
     throw err;

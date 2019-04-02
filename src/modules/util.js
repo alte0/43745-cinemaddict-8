@@ -145,13 +145,6 @@ const updateFilmData = (films, film, newDataFilm) => {
 };
 /**
  * @param {HTMLElement} el
- * @param {String} str
- */
-const recordText = (el, str) => {
-  el.textContent = str;
-};
-/**
- * @param {HTMLElement} el
  */
 const setBlockElem = (el) => {
   el.disabled = true;
@@ -196,7 +189,6 @@ export {
   deleteEl,
   renderTempate,
   filterFilms,
-  recordText,
   updateFilmData,
   setBlockElem,
   setUnBlockElem,
