@@ -179,7 +179,13 @@ const setErrorStyle = (el, bool = true) => {
   }
   el.classList.add(`shake`);
 };
-const sliceForShowMovies = (arr, start = 0, end) => arr.slice(start, end);
+const sliceForShowMovies = (arr, start = 0, end) => {
+  if (end > arr.length) {
+    end = arr.length;
+  }
+
+  return arr.slice(start, end);
+};
 
 export {
   clearChildEl,

@@ -23,7 +23,7 @@ import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
 import {showInfoMessage, TypeMessage} from "./modules/showUserMessage";
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test2`;
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test3`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 const FILMS_STORE_KEY = `films-store-key-dev`;
 
@@ -58,8 +58,9 @@ const footerStat = body.querySelector(`.footer__statistics`);
 const profile = body.querySelector(`.profile`);
 const filterNameTopRated = `Most rated`;
 const filterNameTopCommented = `Most commented`;
+let countEndNextShowMovies = 5;
 let initialCardsFilms;
-let countEndNextShowMovies;
+let filterName;
 
 /**
  * @param {Array} arr
@@ -218,7 +219,9 @@ const filterCardsFilms = (evt) => {
 
   if (targetTagName === `A` && !target.classList.contains(`main-navigation__item--active`)) {
     const navItems = body.querySelectorAll(`.main-navigation__item`);
-    const filterName = target.getAttribute(`href`);
+    // const filterName = target.getAttribute(`href`);
+    filterName = target.getAttribute(`href`);
+    countEndNextShowMovies = 5;
 
     for (const navItem of navItems) {
       navItem.classList.remove(`main-navigation__item--active`);
@@ -232,12 +235,13 @@ const filterCardsFilms = (evt) => {
     } else {
       statistic.classList.add(`visually-hidden`);
       films.classList.remove(`visually-hidden`);
-      btnShowMore.style = `display: none`;
-      renderCards(sliceForShowMovies(filterFilms(filterName, initialCardsFilms), countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
-    }
-
-    if (filterName === `#all`) {
-      btnShowMore.style = ``;
+      const filteredMovie = filterFilms(filterName, initialCardsFilms);
+      if (filteredMovie.length <= countEndShowMovies) {
+        btnShowMore.style = `display: none`;
+      } else {
+        btnShowMore.style = ``;
+      }
+      renderCards(sliceForShowMovies(filteredMovie, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
     }
   }
 
@@ -254,25 +258,22 @@ const filterCardsFilms = (evt) => {
  * @param {HTMLElement} el
  * @param {Array} arr
  */
-const recordCountForFilters = (el, arr) =>{
+const recordCountForFilters = (el, arr) => {
   const itemCounts = el.querySelectorAll(`.main-navigation__item-count`);
 
   Array.from(itemCounts).forEach((itemCount) => {
-    const filterName = itemCount.parentElement.getAttribute(`href`);
-    itemCount.textContent = filterFilms(filterName, arr).length;
+    const filterNameParent = itemCount.parentElement.getAttribute(`href`);
+    itemCount.textContent = filterFilms(filterNameParent, arr).length;
   });
 };
 
 const onButtonClick = (evt) => {
   const count = 5;
-  const isConditionEnd = () => countEndNextShowMovies >= initialCardsFilms.length;
-
-  if (countEndNextShowMovies === undefined) {
-    countEndNextShowMovies = countEndShowMovies;
-  }
+  const currentMovies = filterFilms(filterName, initialCardsFilms);
+  const isConditionEnd = () => countEndNextShowMovies >= currentMovies.length;
 
   if (!isConditionEnd()) {
-    renderCards(sliceForShowMovies(initialCardsFilms, countEndNextShowMovies, countEndNextShowMovies = countEndNextShowMovies + count), filmsCardsContainer, Card, PopupCard);
+    renderCards(sliceForShowMovies(currentMovies, countEndNextShowMovies, countEndNextShowMovies = countEndNextShowMovies + count), filmsCardsContainer, Card, PopupCard);
 
     if (isConditionEnd()) {
       evt.target.style = `display: none`;
@@ -289,6 +290,7 @@ const onInputSearchInput = (evt) => {
     renderCards(sliceForShowMovies(initialCardsFilms, countStartShowMovies, countEndShowMovies), filmsCardsContainer, Card, PopupCard);
     btnShowMore.style = ``;
     body.querySelector(`.main-navigation__item`).classList.add(`main-navigation__item--active`);
+    filterName = `#all`;
   } else {
     if (body.querySelector(`.main-navigation__item--active`)) {
       const navItems = body.querySelectorAll(`.main-navigation__item`);
@@ -305,9 +307,10 @@ const onInputSearchInput = (evt) => {
 
 };
 /**
+ * @param {HTMLElement} el
  * @param {Array} arr
  */
-const setRankUser = (arr) => {
+const setRankUser = (el, arr) => {
   const RankType = {
     novice: `novice`,
     fan: `fan`,
@@ -324,7 +327,7 @@ const setRankUser = (arr) => {
     rank = RankType.movieBuff;
   }
 
-  profile.innerHTML = `<p class="profile__rating">${rank}</p>`;
+  el.innerHTML = `<p class="profile__rating">${rank}</p>`;
 };
 
 window.addEventListener(`offline`, () => {
@@ -351,7 +354,7 @@ provider.getMovies()
   renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
   recordCountForFilters(mainNav, initialCardsFilms);
   footerStat.innerHTML = `<p>${initialCardsFilms.length} movies inside</p>`;
-  setRankUser(initialCardsFilms);
+  setRankUser(profile, initialCardsFilms);
 })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
