@@ -118,10 +118,12 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
     popupCardComponent.onTextareaKeyDown = (newObject) => {
       const textArea = body.querySelector(`.film-details__comment-input`);
+      const userRatingControls = body.querySelector(`.film-details__user-rating-controls`);
       const newDataCard = updateFilmData(arr, dataCard, newObject);
 
       provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
         .then((newDataFim) => {
+          userRatingControls.classList.remove(`visually-hidden`);
           cardComponent.update(newDataFim);
           cardComponent.partialUpdate();
           cardComponent.unbind();
@@ -133,7 +135,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           textArea.value = ``;
           setUnBlockElem(textArea);
           clearChildEl(filmsCardsContainerExtraMost);
-          renderCards(filterFilms(filterNameTopCommented, initialCardsFilms).splice(0, 2), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+          renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
         })
         .catch(() => {
           setErrorStyle(textArea.parentElement);
@@ -182,7 +184,24 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newDataFim) => {
           cardComponent.update(newDataFim);
           popupCardComponent.update(newDataFim);
+          popupCardComponent.partialUpdateStatus();
           recordCountForFilters(mainNav, initialCardsFilms);
+        });
+    };
+
+    popupCardComponent.onButtonUndoCommentClick = (newObject) => {
+      const newDataCard = updateFilmData(arr, dataCard, newObject);
+
+      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
+        .then((newDataFim) => {
+          cardComponent.update(newDataFim);
+          cardComponent.partialUpdate();
+          cardComponent.unbind();
+          cardComponent.bind();
+
+          popupCardComponent.update(newDataFim);
+          popupCardComponent.partialUpdateComments();
+          renderCards(sliceForShowMovies(filterFilms(filterNameTopCommented, initialCardsFilms), countStartShowMovies, countEndShowMoviesExtra), filmsCardsContainerExtraMost, CardExtra, PopupCard);
         });
     };
 

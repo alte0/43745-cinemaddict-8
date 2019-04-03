@@ -73,6 +73,7 @@ export default class PopapCard extends Component {
     this._onTextareaKeyDown = null;
     this._onRadioRatingChange = null;
     this._onCheckboxControlClick = null;
+    this._onButtonUndoCommentClick = null;
 
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
@@ -80,6 +81,7 @@ export default class PopapCard extends Component {
     this._onKeydownEnter = this._onKeydownEnter.bind(this);
     this._onCheckboxControlInputClick = this._onCheckboxControlInputClick.bind(this);
     this._windowEscKeyDownHander = this._windowEscKeyDownHander.bind(this);
+    this._onButtonUndoClick = this._onButtonUndoClick.bind(this);
   }
 
   get template() {
@@ -191,8 +193,8 @@ export default class PopapCard extends Component {
           </section>
 
           <section class="film-details__user-rating-wrap">
-            <div class="film-details__user-rating-controls">
-              <span class="film-details__watched-status film-details__watched-status--active">Already watched</span>
+            <div class="film-details__user-rating-controls visually-hidden">
+              <span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>
               <button class="film-details__watched-reset" type="button">undo</button>
             </div>
 
@@ -230,6 +232,9 @@ export default class PopapCard extends Component {
 
   set onCheckboxControlClick(fn) {
     this._onCheckboxControlClick = fn;
+  }
+  set onButtonUndoCommentClick(fn) {
+    this._onButtonUndoCommentClick = fn;
   }
 
   _onButtonClick() {
@@ -302,6 +307,19 @@ export default class PopapCard extends Component {
     }
   }
 
+  _onButtonUndoClick() {
+    const copyCommments = this._comments.slice();
+    const lastComment = copyCommments.length - 1;
+
+    if (copyCommments[lastComment].author === `User`) {
+      copyCommments.splice(lastComment, 1);
+    }
+
+    if (typeof this._onButtonUndoCommentClick === `function`) {
+      this._onButtonUndoCommentClick({comments: copyCommments});
+    }
+  }
+
   render(container) {
     if (this._element) {
       container.removeChild(this._element);
@@ -324,6 +342,14 @@ export default class PopapCard extends Component {
 
     const newComments = createComments(this._comments);
     commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
+  }
+
+  partialUpdateStatus() {
+    const status = this._element.querySelector(`.film-details__watched-status`);
+    const newStatus = createElement(`<span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>`);
+    const parentEl = status.parentElement;
+    parentEl.removeChild(status);
+    parentEl.insertBefore(newStatus, parentEl.firstChild);
   }
 
   update(data) {
@@ -396,6 +422,9 @@ export default class PopapCard extends Component {
     this._element
       .querySelector(`[name="favorite"]`)
       .addEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`.film-details__watched-reset`)
+      .addEventListener(`click`, this._onButtonUndoClick);
   }
 
   unbind() {
@@ -422,5 +451,8 @@ export default class PopapCard extends Component {
     this._element
       .querySelector(`[name="favorite"]`)
       .removeEventListener(`click`, this._onCheckboxControlInputClick);
+    this._element
+      .querySelector(`.film-details__watched-reset`)
+      .removeEventListener(`click`, this._onButtonUndoClick);
   }
 }
