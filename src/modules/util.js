@@ -179,12 +179,41 @@ const setErrorStyle = (el, bool = true) => {
   }
   el.classList.add(`shake`);
 };
+/**
+ * @param {Array} arr
+ * @param {Number} start
+ * @param {Number} end
+ * @return {Array}
+ */
 const sliceForShowMovies = (arr, start = 0, end) => {
   if (end > arr.length) {
     end = arr.length;
   }
 
   return arr.slice(start, end);
+};
+/**
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const setRankUser = (el, arr) => {
+  const RankType = {
+    novice: `Novice`,
+    fan: `Fan`,
+    movieBuff: `Movie buff`,
+  };
+  const length = arr.length;
+  let rank = ``;
+
+  if (length > 1 && length <= 10) {
+    rank = RankType.novice;
+  } else if (length > 11 && length <= 20) {
+    rank = RankType.fan;
+  } else if (length > 21) {
+    rank = RankType.movieBuff;
+  }
+
+  el.innerHTML = `<p class="profile__rating">${rank}</p>`;
 };
 
 export {
@@ -200,5 +229,6 @@ export {
   setUnBlockElem,
   setDefaulStyle,
   setErrorStyle,
-  sliceForShowMovies
+  sliceForShowMovies,
+  setRankUser
 };
