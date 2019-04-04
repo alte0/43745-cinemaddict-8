@@ -79,7 +79,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
     const cardComponent = new ClsCard(dataCard);
     const popupCardComponent = new ClsPopup(dataCard);
 
-    cardComponent.popupOpen = () => {
+    cardComponent.open = () => {
       if (!body.querySelector(`.film-details`)) {
         popupCardComponent.render(body);
       }

@@ -1,6 +1,5 @@
 import {renderTempate} from "./util";
 import moment from "moment";
-
 /**
  * Отрисовывает статистику в списке ul
  * @param {Array} data

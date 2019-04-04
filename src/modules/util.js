@@ -1,4 +1,5 @@
 /**
+ * Отрисовка template
  * @param {String} template
  * @param {HTMLElement} el
  */
@@ -27,6 +28,7 @@ const clearChildEl = (el) => {
   el.innerHTML = ``;
 };
 /**
+ * Удаление ребенка в родителе
  * @param {HTMLElement} container
  * @param {HTMLElement} deleteElement
  */
@@ -34,6 +36,7 @@ const deleteEl = (container, deleteElement) => {
   container.removeChild(deleteElement);
 };
 /**
+ * Создание элемента
  * @param {String} template
  * @return {HTMLElement} HTMLElement
  */
@@ -43,6 +46,7 @@ const createElement = (template) => {
   return wrapperTemplate.content.cloneNode(true).firstChild;
 };
 /**
+ * Калькульция для статистики
  * @param {Array} arr
  * @return {Object}
  */
@@ -105,9 +109,10 @@ const calculateStat = (arr) => {
   return initiaStaticList;
 };
 /**
+ * Фильтрация фильмов по параметру filterName
  * @param {String} filterName
  * @param {Array} initialFilms
- * @param {String} text
+ * @param {String} text для поиска по введеным данным
  * @return {Array}
  */
 const filterFilms = (filterName, initialFilms, text = ``) => {
@@ -135,6 +140,7 @@ const filterFilms = (filterName, initialFilms, text = ``) => {
   }
 };
 /**
+ * Обновление данных о фильме
  * @param {Array} films
  * @param {Object} film
  * @param {Object} newDataFilm
@@ -146,18 +152,21 @@ const updateFilmData = (films, film, newDataFilm) => {
   return films[index];
 };
 /**
+ * Блокировка элемента
  * @param {HTMLElement} el
  */
 const setBlockElem = (el) => {
   el.disabled = true;
 };
 /**
+ * Сннятие блокировки
  * @param {HTMLElement} el
  */
 const setUnBlockElem = (el) => {
   el.disabled = false;
 };
 /**
+ * Установка дефолтны стилей/удаление стилей об ошибке
  * @param {HTMLElement} el
  * @param {Boolean} bool
  */
@@ -170,6 +179,7 @@ const setDefaulStyle = (el, bool = true) => {
   el.classList.remove(`shake`);
 };
 /**
+ * Установка стилей при ошибке
  * @param {HTMLElement} el
  * @param {Boolean} bool
  */
@@ -182,7 +192,7 @@ const setErrorStyle = (el, bool = true) => {
   el.classList.add(`shake`);
 };
 /**
- * Делает копию данных, для показа их по 5 штук
+ * Делает копию данных, для показа их по 5 штук или меньше
  * @param {Array} arr
  * @param {Number} start
  * @param {Number} end

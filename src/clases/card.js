@@ -1,6 +1,7 @@
 import CardCommon from "./сomponent-card";
 
-const maxDescription = 137;
+const START_SLICE = 0;
+const MAX_SYMBOLS = 137;
 
 export default class Card extends CardCommon {
   get template() {
@@ -16,7 +17,7 @@ export default class Card extends CardCommon {
             .join(``)}
         </p>
         <img src="./${this._imgSource}" alt="${this._title}" class="film-card__poster">
-        <p class="film-card__description">${this._description.slice(0, maxDescription).trim()}${this._description.length > maxDescription ? `...` : ``}</p>
+        <p class="film-card__description">${this._description.slice(START_SLICE, MAX_SYMBOLS).trim()}${this._description.length > MAX_SYMBOLS ? `...` : ``}</p>
         ${this._createBtnOpenComments(this._comments)}
 
         <form class="film-card__controls">

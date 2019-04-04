@@ -1,6 +1,5 @@
 import Component from "./сomponent";
 import moment from "moment";
-import {createElement} from "../modules/util";
 
 export default class ComponentCard extends Component {
   constructor(data) {
@@ -26,7 +25,7 @@ export default class ComponentCard extends Component {
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
 
-    this._openPopup = null;
+    this._open = null;
     this._onAddToWatchList = null;
     this._onMarkAsWatched = null;
 
@@ -36,8 +35,8 @@ export default class ComponentCard extends Component {
     this._onButtonFavoriteClick = this._onButtonFavoriteClick.bind(this);
   }
 
-  set popupOpen(fn) {
-    this._openPopup = fn;
+  set open(fn) {
+    this._open = fn;
   }
 
   set onAddToWatchList(fn) {
@@ -53,8 +52,8 @@ export default class ComponentCard extends Component {
   }
 
   _onButtonClick() {
-    if (typeof this._openPopup === `function`) {
-      this._openPopup();
+    if (typeof this._open === `function`) {
+      this._open();
     }
   }
 
@@ -97,18 +96,6 @@ export default class ComponentCard extends Component {
     const newBtnCommentOpen = this._createBtnOpenComments(this._comments);
     parent.removeChild(btnCommentOpen);
     prevElemBtnCommentOpen.insertAdjacentHTML(`afterEnd`, newBtnCommentOpen);
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element.remove();
-    this._element = null;
   }
 
   update(data) {

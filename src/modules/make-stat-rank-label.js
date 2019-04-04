@@ -1,5 +1,4 @@
 import {renderTempate} from "./util";
-
 /**
  * Отрисовывает ранг в статистике
  * @param {Array} data
