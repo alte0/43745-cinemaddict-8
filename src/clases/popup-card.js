@@ -1,6 +1,6 @@
 import Component from "./сomponent";
 import moment from "moment";
-import {createElement, setDefaulStyle, setBlockElem} from "../modules/util";
+import {createElement, setDefaulStyle, setBlockElem, deleteEl} from "../modules/util";
 
 const EMOJIS = {
   "sleeping": `😴`,
@@ -80,7 +80,7 @@ export default class PopapCard extends Component {
     this._onChangeEmojiClick = this._onChangeEmojiClick.bind(this);
     this._onKeydownEnter = this._onKeydownEnter.bind(this);
     this._onCheckboxControlInputClick = this._onCheckboxControlInputClick.bind(this);
-    this._windowEscKeyDownHander = this._windowEscKeyDownHander.bind(this);
+    this._onWindowEscKeyDown = this._onWindowEscKeyDown.bind(this);
     this._onButtonUndoClick = this._onButtonUndoClick.bind(this);
   }
 
@@ -219,7 +219,7 @@ export default class PopapCard extends Component {
     `.trim();
   }
 
-  set closePopup(fn) {
+  set close(fn) {
     this._onClosePopup = fn;
   }
   set onTextareaKeyDown(fn) {
@@ -237,18 +237,6 @@ export default class PopapCard extends Component {
     this._onButtonUndoCommentClick = fn;
   }
 
-  _onButtonClick() {
-    if (typeof this._onClosePopup === `function`) {
-      this._onClosePopup();
-    }
-  }
-
-  _windowEscKeyDownHander(evt) {
-    if (evt.keyCode === Keycode.KEYCODE_ESC) {
-      this._onClosePopup();
-    }
-  }
-
   _collectFormData() {
     const formDetais = this._element.querySelector(`.film-details__inner`);
     const formData = new FormData(formDetais);
@@ -261,19 +249,60 @@ export default class PopapCard extends Component {
     return newData;
   }
 
-  _onChangeRatingClick(evt) {
-    const newData = this._collectFormData();
-    if (typeof this._onRadioRatingChange === `function`) {
-      this._onRadioRatingChange(newData, evt);
+  _processForm(formData) {
+    const entry = {
+      isWatchlist: false,
+      isWatched: false,
+      isFavorite: false,
+      comments: {
+        comment: ``,
+        author: `User`,
+        date: new Date(),
+        emotion: ``
+      }
+    };
+
+    const popapCardEditMapper = PopapCard.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      let [key, value] = pair;
+      if (key === `comment-emoji`) {
+        key = `commentEmoji`;
+      }
+      if (popapCardEditMapper[key] && popapCardEditMapper[key](value)) {
+        popapCardEditMapper[key](value);
+      }
     }
+
+    return entry;
   }
 
   partialUpdateRating() {
     const userRating = this._element.querySelector(`.film-details__user-rating`);
     const scoreElement = createElement(`<p class="film-details__user-rating">Your rate ${this._ratingUser}</p>`);
     const parentElScoreUSer = userRating.parentElement;
-    parentElScoreUSer.removeChild(userRating);
+    deleteEl(parentElScoreUSer, userRating);
     parentElScoreUSer.appendChild(scoreElement);
+  }
+
+  partialUpdateComments() {
+    const commentsWrap = this._element.querySelector(`.film-details__comments-wrap`);
+    const commentsTitle = this._element.querySelector(`.film-details__comments-title`);
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+
+    deleteEl(commentsWrap, commentsTitle);
+    deleteEl(commentsWrap, commentsList);
+
+    const newComments = createComments(this._comments);
+    commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
+  }
+
+  partialUpdateStatus() {
+    const status = this._element.querySelector(`.film-details__watched-status`);
+    const newStatus = createElement(`<span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>`);
+    const parentEl = status.parentElement;
+    deleteEl(parentEl, status);
+    parentEl.insertBefore(newStatus, parentEl.firstChild);
   }
 
   _onChangeEmojiClick(evt) {
@@ -320,6 +349,25 @@ export default class PopapCard extends Component {
     }
   }
 
+  _onChangeRatingClick(evt) {
+    const newData = this._collectFormData();
+    if (typeof this._onRadioRatingChange === `function`) {
+      this._onRadioRatingChange(newData, evt);
+    }
+  }
+
+  _onButtonClick() {
+    if (typeof this._onClosePopup === `function`) {
+      this._onClosePopup();
+    }
+  }
+
+  _onWindowEscKeyDown(evt) {
+    if (evt.keyCode === Keycode.KEYCODE_ESC) {
+      this._onClosePopup();
+    }
+  }
+
   render(container) {
     if (this._element) {
       container.removeChild(this._element);
@@ -332,60 +380,12 @@ export default class PopapCard extends Component {
     this.bind();
   }
 
-  partialUpdateComments() {
-    const commentsWrap = this._element.querySelector(`.film-details__comments-wrap`);
-    const commentsTitle = this._element.querySelector(`.film-details__comments-title`);
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
-
-    commentsWrap.removeChild(commentsTitle);
-    commentsWrap.removeChild(commentsList);
-
-    const newComments = createComments(this._comments);
-    commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
-  }
-
-  partialUpdateStatus() {
-    const status = this._element.querySelector(`.film-details__watched-status`);
-    const newStatus = createElement(`<span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>`);
-    const parentEl = status.parentElement;
-    parentEl.removeChild(status);
-    parentEl.insertBefore(newStatus, parentEl.firstChild);
-  }
-
   update(data) {
     this._ratingUser = data.ratingUser;
     this._isWatchlist = data.isWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
     this._comments = data.comments;
-  }
-
-  _processForm(formData) {
-    const entry = {
-      isWatchlist: false,
-      isWatched: false,
-      isFavorite: false,
-      comments: {
-        comment: ``,
-        author: `User`,
-        date: new Date(),
-        emotion: ``
-      }
-    };
-
-    const popapCardEditMapper = PopapCard.createMapper(entry);
-
-    for (const pair of formData.entries()) {
-      let [key, value] = pair;
-      if (key === `comment-emoji`) {
-        key = `commentEmoji`;
-      }
-      if (popapCardEditMapper[key] && popapCardEditMapper[key](value)) {
-        popapCardEditMapper[key](value);
-      }
-    }
-
-    return entry;
   }
 
   static createMapper(target) {
@@ -398,12 +398,13 @@ export default class PopapCard extends Component {
       commentEmoji: (value) => (target.comments.emotion = value)
     };
   }
+
   bind() {
     this._element
       .querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, this._onButtonClick);
     window
-      .addEventListener(`keydown`, this._windowEscKeyDownHander);
+      .addEventListener(`keydown`, this._onWindowEscKeyDown);
     this._element
       .querySelector(`.film-details__user-rating-score`)
       .addEventListener(`change`, this._onChangeRatingClick);
@@ -432,7 +433,7 @@ export default class PopapCard extends Component {
       .querySelector(`.film-details__close-btn`)
       .removeEventListener(`click`, this._onButtonClick);
     window
-      .removeEventListener(`keydown`, this._windowEscKeyDownHander);
+      .removeEventListener(`keydown`, this._onWindowEscKeyDown);
     this._element
       .querySelector(`.film-details__user-rating-score`)
       .removeEventListener(`change`, this._onChangeRatingClick);

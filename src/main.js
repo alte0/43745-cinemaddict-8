@@ -119,7 +119,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         });
     };
 
-    popupCardComponent.closePopup = function () {
+    popupCardComponent.close = function () {
       this.unbind();
       this._element.remove();
       this._element = null;

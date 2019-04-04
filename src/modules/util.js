@@ -29,11 +29,11 @@ const clearChildEl = (el) => {
 };
 /**
  * Удаление ребенка в родителе
- * @param {HTMLElement} container
+ * @param {HTMLElement} parent
  * @param {HTMLElement} deleteElement
  */
-const deleteEl = (container, deleteElement) => {
-  container.removeChild(deleteElement);
+const deleteEl = (parent, deleteElement) => {
+  parent.removeChild(deleteElement);
 };
 /**
  * Создание элемента
