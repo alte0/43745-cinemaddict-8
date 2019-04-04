@@ -18,18 +18,21 @@ toastr.options = {
   "hideMethod": `fadeOut`
 };
 /**
+ * Сообщение для пользователя
  * @param {String} type (`info`, `success`, `Warning`, `Error`)
- * @param {String} message
- * @param {String} title
+ * @param {String} message `text`
+ * @param {String} title `text`
  */
-const showInfoMessage = (type, message, title = ``) => {
+const showMessage = (type, message, title = ``) => {
   if (title) {
     toastr[type](message, title);
   } else {
     toastr[type](message);
   }
 };
-
+/**
+ * Типы сообщений для функции showMessage
+ */
 const TypeMessage = {
   INFO: `info`,
   SUCCESS: `success`,
@@ -37,4 +40,4 @@ const TypeMessage = {
   ERROR: `error`
 };
 
-export {showInfoMessage, TypeMessage};
+export {showMessage, TypeMessage};

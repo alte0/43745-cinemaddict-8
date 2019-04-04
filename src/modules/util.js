@@ -6,6 +6,7 @@ const renderTempate = (template, el = document.body) => {
   el.insertAdjacentHTML(`beforeend`, template);
 };
 /**
+ * Отрисовка фильтров в навигации
  * @param {Array} arr
  * @param {HTMLElement} el
  * @param {Function} ClsFilter
@@ -19,6 +20,7 @@ const renderFilters = (arr, el, ClsFilter, filterCardsFilms) => {
   }
 };
 /**
+ * Очишает внутри элемента
  * @param {HTMLElement} el
  */
 const clearChildEl = (el) => {
@@ -180,6 +182,7 @@ const setErrorStyle = (el, bool = true) => {
   el.classList.add(`shake`);
 };
 /**
+ * Делает копию данных, для показа их по 5 штук
  * @param {Array} arr
  * @param {Number} start
  * @param {Number} end
@@ -193,6 +196,7 @@ const sliceForShowMovies = (arr, start = 0, end) => {
   return arr.slice(start, end);
 };
 /**
+ * Устанавливает ранк пользователя
  * @param {HTMLElement} el
  * @param {Array} arr
  */
@@ -215,6 +219,19 @@ const setRankUser = (el, arr) => {
 
   el.innerHTML = `<p class="profile__rating">${rank}</p>`;
 };
+/**
+ * Записывает количество отфильтрованых значений в навигации
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const recordNumberOfFilterValues = (el, arr) => {
+  const itemCounts = el.querySelectorAll(`.main-navigation__item-count`);
+
+  Array.from(itemCounts).forEach((itemCount) => {
+    const filterNameParent = itemCount.parentElement.getAttribute(`href`);
+    itemCount.textContent = filterFilms(filterNameParent, arr).length;
+  });
+};
 
 export {
   clearChildEl,
@@ -230,5 +247,6 @@ export {
   setDefaulStyle,
   setErrorStyle,
   sliceForShowMovies,
-  setRankUser
+  setRankUser,
+  recordNumberOfFilterValues
 };
