@@ -368,16 +368,22 @@ export default class PopapCard extends Component {
     }
   }
 
-  render(container) {
-    if (this._element) {
-      container.removeChild(this._element);
-      this._element = null;
-    }
+  // render(container) {
+  //   if (this._element) {
+  //     container.removeChild(this._element);
+  //     this._element = null;
+  //   }
 
+  //   this._element = createElement(this.template);
+  //   container.appendChild(this._element);
+
+  //   this.bind();
+  // }
+
+  render() {
     this._element = createElement(this.template);
-    container.appendChild(this._element);
-
     this.bind();
+    return this._element;
   }
 
   update(data) {
