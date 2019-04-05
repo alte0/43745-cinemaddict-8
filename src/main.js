@@ -48,6 +48,7 @@ const COUNT_END_SHOW_MOVIES = 5;
 const COUNT_END_SHOW_MOVIES_EXTRA = 2;
 const FILTER_NAME_TOP_RATED = `Most rated`;
 const FILTER_NAME_TOP_COMMENTED = `Most commented`;
+const FILTER_NAME_WATCHED = `#history`;
 
 const body = document.body;
 const mainNav = body.querySelector(`.main-navigation`);
@@ -102,6 +103,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
           popupCardComponent.update(newDataMovie);
           recordNumberOfFilterValues(mainNav, initialMovies);
           showMessage(TypeMessage.SUCCESS, Text.VIEWED);
+          setRankUser(profile, filterFilms(FILTER_NAME_WATCHED, initialMovies));
         });
     };
 
@@ -315,7 +317,7 @@ provider.getMovies()
     renderCards(sliceForShowMovies(filterFilms(FILTER_NAME_TOP_COMMENTED, initialMovies), COUNT_START_SHOW_MOVIES, COUNT_END_SHOW_MOVIES_EXTRA), filmsCardsContainerExtraMost, CardExtra, PopupCard);
     recordNumberOfFilterValues(mainNav, initialMovies);
     footerStat.innerHTML = `<p>${initialMovies.length} movies inside</p>`;
-    setRankUser(profile, initialMovies);
+    setRankUser(profile, filterFilms(FILTER_NAME_WATCHED, initialMovies));
   })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
