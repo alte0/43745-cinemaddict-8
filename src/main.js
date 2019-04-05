@@ -24,6 +24,8 @@ import {API} from "./clases/api";
 import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
 import {showMessage, TypeMessage} from "./modules/show-user-message";
+import Search from "./clases/search";
+
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test3`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
@@ -48,8 +50,6 @@ const FILTER_NAME_TOP_RATED = `Most rated`;
 const FILTER_NAME_TOP_COMMENTED = `Most commented`;
 
 const body = document.body;
-const searchForm = body.querySelector(`.search`);
-const searchField = body.querySelector(`.search__field`);
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
 const btnShowMore = films.querySelector(`.films-list__show-more`);
@@ -81,7 +81,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
     cardComponent.open = () => {
       if (!body.querySelector(`.film-details`)) {
-        popupCardComponent.render(body);
+        body.appendChild(popupCardComponent.render());
       }
     };
 
@@ -298,18 +298,9 @@ const onInputSearchInput = (evt) => {
   }
 };
 
-window.addEventListener(`offline`, () => {
-  document.title = `${document.title}[OFFLINE]`;
-});
-window.addEventListener(`online`, () => {
-  document.title = document.title.split(`[OFFLINE]`)[0];
-  provider.syncTasks();
-});
-btnShowMore.addEventListener(`click`, onButtonMoreClick);
-searchField.addEventListener(`input`, onInputSearchInput);
-searchForm.addEventListener(`submit`, (evt) => {
-  evt.preventDefault();
-});
+const searchField = new Search();
+searchField.search = onInputSearchInput;
+profile.parentElement.insertBefore(searchField.render(), profile);
 
 provider.getMovies()
   .then((dataFilms) => {
@@ -330,3 +321,11 @@ provider.getMovies()
     throw err;
   });
 
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks();
+});
+btnShowMore.addEventListener(`click`, onButtonMoreClick);
