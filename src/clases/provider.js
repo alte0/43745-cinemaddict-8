@@ -38,7 +38,7 @@ class Provider {
         return movies;
       });
     } else {
-      const rawMoviesMap = this._store.getMovies();
+      const rawMoviesMap = this._store.getAll();
       const rawMovies = objectToArray(rawMoviesMap);
       const movies = ModelFilm.parseFilms(rawMovies);
       return Promise.resolve(movies);

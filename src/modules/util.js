@@ -1,4 +1,5 @@
 /**
+ * Отрисовка template
  * @param {String} template
  * @param {HTMLElement} el
  */
@@ -6,6 +7,7 @@ const renderTempate = (template, el = document.body) => {
   el.insertAdjacentHTML(`beforeend`, template);
 };
 /**
+ * Отрисовка фильтров в навигации
  * @param {Array} arr
  * @param {HTMLElement} el
  * @param {Function} ClsFilter
@@ -19,19 +21,22 @@ const renderFilters = (arr, el, ClsFilter, filterCardsFilms) => {
   }
 };
 /**
+ * Очишает внутри элемента
  * @param {HTMLElement} el
  */
 const clearChildEl = (el) => {
   el.innerHTML = ``;
 };
 /**
- * @param {HTMLElement} container
+ * Удаление ребенка в родителе
+ * @param {HTMLElement} parent
  * @param {HTMLElement} deleteElement
  */
-const deleteEl = (container, deleteElement) => {
-  container.removeChild(deleteElement);
+const deleteEl = (parent, deleteElement) => {
+  parent.removeChild(deleteElement);
 };
 /**
+ * Создание элемента
  * @param {String} template
  * @return {HTMLElement} HTMLElement
  */
@@ -41,6 +46,7 @@ const createElement = (template) => {
   return wrapperTemplate.content.cloneNode(true).firstChild;
 };
 /**
+ * Калькульция для статистики
  * @param {Array} arr
  * @return {Object}
  */
@@ -103,11 +109,13 @@ const calculateStat = (arr) => {
   return initiaStaticList;
 };
 /**
+ * Фильтрация фильмов по параметру filterName
  * @param {String} filterName
  * @param {Array} initialFilms
+ * @param {String} text для поиска по введеным данным
  * @return {Array}
  */
-const filterFilms = (filterName, initialFilms) => {
+const filterFilms = (filterName, initialFilms, text = ``) => {
   switch (filterName) {
     case `#all`:
       return initialFilms;
@@ -117,6 +125,12 @@ const filterFilms = (filterName, initialFilms) => {
       return initialFilms.filter((film) => film.isWatched);
     case `#favorites`:
       return initialFilms.filter((film) => film.isFavorite);
+    case `searchTitle`:
+      const regexpSearchText = new RegExp(`${text}`, `gi`);
+      return initialFilms.filter((film) => {
+        const resultSearch = film.title.match(regexpSearchText);
+        return resultSearch !== null && resultSearch.length > 0;
+      });
     case `Most rated`:
       return [...initialFilms].sort((a, b) => b.rating - a.rating);
     case `Most commented`:
@@ -126,6 +140,7 @@ const filterFilms = (filterName, initialFilms) => {
   }
 };
 /**
+ * Обновление данных о фильме
  * @param {Array} films
  * @param {Object} film
  * @param {Object} newDataFilm
@@ -137,25 +152,21 @@ const updateFilmData = (films, film, newDataFilm) => {
   return films[index];
 };
 /**
- * @param {HTMLElement} el
- * @param {String} str
- */
-const recordText = (el, str) => {
-  el.textContent = str;
-};
-/**
+ * Блокировка элемента
  * @param {HTMLElement} el
  */
 const setBlockElem = (el) => {
   el.disabled = true;
 };
 /**
+ * Сннятие блокировки
  * @param {HTMLElement} el
  */
 const setUnBlockElem = (el) => {
   el.disabled = false;
 };
 /**
+ * Установка дефолтны стилей/удаление стилей об ошибке
  * @param {HTMLElement} el
  * @param {Boolean} bool
  */
@@ -168,6 +179,7 @@ const setDefaulStyle = (el, bool = true) => {
   el.classList.remove(`shake`);
 };
 /**
+ * Установка стилей при ошибке
  * @param {HTMLElement} el
  * @param {Boolean} bool
  */
@@ -179,6 +191,58 @@ const setErrorStyle = (el, bool = true) => {
   }
   el.classList.add(`shake`);
 };
+/**
+ * Делает копию данных, для показа их по 5 штук или меньше
+ * @param {Array} arr
+ * @param {Number} start
+ * @param {Number} end
+ * @return {Array}
+ */
+const sliceForShowMovies = (arr, start = 0, end) => {
+  if (end > arr.length) {
+    end = arr.length;
+  }
+
+  return arr.slice(start, end);
+};
+/**
+ * Устанавливает ранк пользователя
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const setRankUser = (el, arr) => {
+  const RankType = {
+    novice: `Novice`,
+    fan: `Fan`,
+    movieBuff: `Movie buff`,
+  };
+  const length = arr.length;
+  let rank = ``;
+
+  if (length > 1 && length <= 10) {
+    rank = RankType.novice;
+  } else if (length > 11 && length <= 20) {
+    rank = RankType.fan;
+  } else if (length > 21) {
+    rank = RankType.movieBuff;
+  }
+
+  el.innerHTML = `<p class="profile__rating">${rank}</p>`;
+};
+/**
+ * Записывает количество отфильтрованых значений в навигации
+ * @param {HTMLElement} el
+ * @param {Array} arr
+ */
+const recordNumberOfFilterValues = (el, arr) => {
+  const itemCounts = el.querySelectorAll(`.main-navigation__item-count`);
+
+  Array.from(itemCounts).forEach((itemCount) => {
+    const filterNameParent = itemCount.parentElement.getAttribute(`href`);
+    itemCount.textContent = filterFilms(filterNameParent, arr).length;
+  });
+};
+
 export {
   clearChildEl,
   renderFilters,
@@ -187,10 +251,12 @@ export {
   deleteEl,
   renderTempate,
   filterFilms,
-  recordText,
   updateFilmData,
   setBlockElem,
   setUnBlockElem,
   setDefaulStyle,
-  setErrorStyle
+  setErrorStyle,
+  sliceForShowMovies,
+  setRankUser,
+  recordNumberOfFilterValues
 };

@@ -26,8 +26,6 @@ class Store {
     try {
       return JSON.parse(items);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(`Error parse items. Error: ${e}. Items: ${items}`);
       return emptyItems;
     }
   }

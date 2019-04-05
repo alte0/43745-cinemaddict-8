@@ -1,11 +1,11 @@
 import {renderTempate} from "./util";
 import moment from "moment";
-
 /**
+ * Отрисовывает статистику в списке ul
  * @param {Array} data
  * @param {HTMLElement} el
  */
-export default (data, el) => {
+export const renderStatList = (data, el) => {
   const statisticListTemplate = `
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">You watched</h4>
