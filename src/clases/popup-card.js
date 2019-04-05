@@ -68,6 +68,7 @@ export default class PopapCard extends Component {
     this._isWatchlist = data.isWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
+    this._statusComment = ``;
 
     this._onClosePopup = null;
     this._onTextareaKeyDown = null;
@@ -193,9 +194,9 @@ export default class PopapCard extends Component {
           </section>
 
           <section class="film-details__user-rating-wrap">
-            <div class="film-details__user-rating-controls visually-hidden">
-              <span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>
-              <button class="film-details__watched-reset" type="button">undo</button>
+            <div class="film-details__user-rating-controls">
+              <span class="film-details__watched-status film-details__watched-status--active">${this._statusComment}</span>
+              <button class="film-details__watched-reset visually-hidden" type="button">undo</button>
             </div>
 
             <div class="film-details__user-score">
@@ -296,13 +297,35 @@ export default class PopapCard extends Component {
     const newComments = createComments(this._comments);
     commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
   }
+  /**
+   * @param {Boolean} hidden
+   */
+  _updateStatus(hidden) {
+    const statusWrap = this._element.querySelector(`.film-details__user-rating-controls`);
+    const newStatus = createElement(`
+      <div class="film-details__user-rating-controls">
+        <span class="film-details__watched-status film-details__watched-status--active">${this._statusComment}</span>
+        <button class="film-details__watched-reset${hidden ? ` visually-hidden` : ``}" type="button">undo</button>
+      </div>
+    `.trim());
 
-  partialUpdateStatus() {
-    const status = this._element.querySelector(`.film-details__watched-status`);
-    const newStatus = createElement(`<span class="film-details__watched-status film-details__watched-status--active">${this._isWatched ? `Already watched` : ``}${this._isWatched && this._isWatchlist ? `, ` : ` `}${this._isWatchlist ? `Will watch` : ``}</span>`);
-    const parentEl = status.parentElement;
-    deleteEl(parentEl, status);
+    const parentEl = statusWrap.parentElement;
+    statusWrap.remove();
     parentEl.insertBefore(newStatus, parentEl.firstChild);
+  }
+
+  setStatusCommentAdd() {
+    if (this._statusComment === `` || this._statusComment === `Comment deleted`) {
+      this._statusComment = `Comment added`;
+      this._updateStatus(false);
+    }
+  }
+
+  _setStatusCommentRemove() {
+    if (this._statusComment === `Comment added`) {
+      this._statusComment = `Comment deleted`;
+      this._updateStatus(true);
+    }
   }
 
   _onChangeEmojiClick(evt) {
@@ -342,6 +365,7 @@ export default class PopapCard extends Component {
 
     if (copyCommments[lastComment].author === `User`) {
       copyCommments.splice(lastComment, 1);
+      this._setStatusCommentRemove();
     }
 
     if (typeof this._onButtonUndoCommentClick === `function`) {
@@ -366,24 +390,6 @@ export default class PopapCard extends Component {
     if (evt.keyCode === Keycode.KEYCODE_ESC) {
       this._onClosePopup();
     }
-  }
-
-  // render(container) {
-  //   if (this._element) {
-  //     container.removeChild(this._element);
-  //     this._element = null;
-  //   }
-
-  //   this._element = createElement(this.template);
-  //   container.appendChild(this._element);
-
-  //   this.bind();
-  // }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
   }
 
   update(data) {

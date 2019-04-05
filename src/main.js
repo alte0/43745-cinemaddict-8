@@ -140,6 +140,9 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
           popupCardComponent.update(newDataMovie);
           popupCardComponent.partialUpdateComments();
+          popupCardComponent.setStatusCommentAdd();
+          popupCardComponent.unbind();
+          popupCardComponent.bind();
 
           textArea.value = ``;
           setUnBlockElem(textArea);
@@ -193,7 +196,6 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         .then((newDataMovie) => {
           cardComponent.update(newDataMovie);
           popupCardComponent.update(newDataMovie);
-          popupCardComponent.partialUpdateStatus();
           recordNumberOfFilterValues(mainNav, initialMovies);
         });
     };
