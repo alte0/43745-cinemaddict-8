@@ -4,9 +4,8 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 export const getStaticCtx = (ctx, statData) => {
   const BAR_HEIGHT = 50;
   ctx.height = BAR_HEIGHT * statData.statForCanvas.labels.length;
-  // https://www.chartjs.org/docs/latest/getting-started/integration.html#bundlers-webpack-rollup-etc
-  // eslint-disable-next-line no-unused-vars
-  const myChart = new Chart(ctx, {
+
+  return new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
