@@ -324,7 +324,8 @@ const onButtonMoreClick = (evt) => {
 
 const onInputSearchInput = (evt) => {
   const textSearch = evt.target.value;
-
+  statistic.classList.add(`visually-hidden`);
+  films.classList.remove(`visually-hidden`);
   clearChildEl(filmsCardsContainer);
 
   if (textSearch === ``) {
