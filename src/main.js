@@ -1,7 +1,7 @@
 import {
   renderFilters,
   clearChildEl,
-  calculateStat,
+  filterFilmsForStatictic,
   filterFilms,
   updateFilmData,
   setDefaulStyle,
@@ -57,6 +57,7 @@ const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
 const btnShowMore = films.querySelector(`.films-list__show-more`);
 const statistic = body.querySelector(`.statistic`);
+const statisticFilters = statistic.querySelector(`.statistic__filters`);
 const statisticRank = body.querySelector(`.statistic__rank`);
 const statisticList = body.querySelector(`.statistic__text-list`);
 const statisticCtx = body.querySelector(`.statistic__chart`);
@@ -299,9 +300,10 @@ const filterCardsFilms = (evt) => {
   }
 
   if ((targetTagName === `A` && target.classList.contains(`main-navigation__item--additional`))) {
-    const statData = calculateStat(initialMovies);
+    const filterNameStat = Array.from(new FormData(statisticFilters).entries())[0][1];
     clearChildEl(statisticList);
     clearChildEl(statisticRank);
+    const statData = filterFilmsForStatictic(filterNameStat, initialMovies);
     renderStatRankLabel(statData, statisticRank);
     renderStatList(statData, statisticList);
     getStaticCtx(statisticCtx, statData);
@@ -379,3 +381,12 @@ window.addEventListener(`online`, () => {
   provider.syncMovies();
 });
 btnShowMore.addEventListener(`click`, onButtonMoreClick);
+
+statisticFilters.addEventListener(`change`, (evt) => {
+  clearChildEl(statisticList);
+  clearChildEl(statisticRank);
+  const statData = filterFilmsForStatictic(evt.target.value, initialMovies);
+  renderStatRankLabel(statData, statisticRank);
+  renderStatList(statData, statisticList);
+  getStaticCtx(statisticCtx, statData);
+});
