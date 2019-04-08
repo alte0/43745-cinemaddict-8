@@ -27,7 +27,7 @@ import {showMessage, TypeMessage} from "./modules/show-user-message";
 import Search from "./clases/search";
 
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test7`;
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 const FILMS_STORE_KEY = `films-store-key-dev`;
 

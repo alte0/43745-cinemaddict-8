@@ -42,11 +42,11 @@ export const API = class {
       .then(ModelFilm.parseFilm);
   }
 
-  syncMovies({tasks}) {
+  syncMovies({movie}) {
     return this._load({
       url: `movies/sync`,
       method: `POST`,
-      body: JSON.stringify(tasks),
+      body: JSON.stringify(movie),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON);

@@ -45,7 +45,7 @@ export class Provider {
     }
   }
 
-  syncTasks() {
-    return this._api.syncTasks({tasks: objectToArray(this._store.getAll())});
+  syncMovies() {
+    return this._api.syncMovies({movie: objectToArray(this._store.getAll())});
   }
 }
