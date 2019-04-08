@@ -73,16 +73,20 @@ export default class PopapCard extends Component {
     this._onClosePopup = null;
     this._onTextareaKeyDown = null;
     this._onRadioRatingChange = null;
-    this._onCheckboxControlClick = null;
+    this._addWatchlist = null;
+    this._addWatched = null;
+    this._toggleFavorites = null;
     this._onButtonUndoCommentClick = null;
 
     this._onButtonClick = this._onButtonClick.bind(this);
     this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
     this._onChangeEmojiClick = this._onChangeEmojiClick.bind(this);
     this._onKeydownEnter = this._onKeydownEnter.bind(this);
-    this._onCheckboxControlInputClick = this._onCheckboxControlInputClick.bind(this);
     this._onWindowEscKeyDown = this._onWindowEscKeyDown.bind(this);
     this._onButtonUndoClick = this._onButtonUndoClick.bind(this);
+    this._onCheckboxControlInputWatchlistClick = this._onCheckboxControlInputWatchlistClick.bind(this);
+    this._onCheckboxControlInputWatchedClick = this._onCheckboxControlInputWatchedClick.bind(this);
+    this._onCheckboxControlInputFavoriteClick = this._onCheckboxControlInputFavoriteClick.bind(this);
   }
 
   get template() {
@@ -231,9 +235,18 @@ export default class PopapCard extends Component {
     this._onRadioRatingChange = fn;
   }
 
-  set onCheckboxControlClick(fn) {
-    this._onCheckboxControlClick = fn;
+  set addWatchlist(fn) {
+    this._addWatchlist = fn;
   }
+
+  set addWatched(fn) {
+    this._addWatched = fn;
+  }
+
+  set toggleFavorites(fn) {
+    this._toggleFavorites = fn;
+  }
+
   set onButtonUndoCommentClick(fn) {
     this._onButtonUndoCommentClick = fn;
   }
@@ -352,10 +365,24 @@ export default class PopapCard extends Component {
     }
   }
 
-  _onCheckboxControlInputClick() {
+  _onCheckboxControlInputWatchlistClick() {
     const newData = this._collectFormData();
-    if (typeof this._onCheckboxControlClick === `function`) {
-      this._onCheckboxControlClick(newData);
+    if (typeof this._addWatchlist === `function`) {
+      this._addWatchlist(newData);
+    }
+  }
+
+  _onCheckboxControlInputWatchedClick() {
+    const newData = this._collectFormData();
+    if (typeof this._addWatched === `function`) {
+      this._addWatched(newData);
+    }
+  }
+
+  _onCheckboxControlInputFavoriteClick() {
+    const newData = this._collectFormData();
+    if (typeof this._toggleFavorites === `function`) {
+      this._toggleFavorites(newData);
     }
   }
 
@@ -428,13 +455,13 @@ export default class PopapCard extends Component {
       .addEventListener(`keydown`, this._onKeydownEnter);
     this._element
       .querySelector(`[name="watchlist"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputClick);
+      .addEventListener(`click`, this._onCheckboxControlInputWatchlistClick);
     this._element
       .querySelector(`[name="watched"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputClick);
+      .addEventListener(`click`, this._onCheckboxControlInputWatchedClick);
     this._element
       .querySelector(`[name="favorite"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputClick);
+      .addEventListener(`click`, this._onCheckboxControlInputFavoriteClick);
     this._element
       .querySelector(`.film-details__watched-reset`)
       .addEventListener(`click`, this._onButtonUndoClick);
@@ -457,13 +484,13 @@ export default class PopapCard extends Component {
       .removeEventListener(`keydown`, this._onKeydownEnter);
     this._element
       .querySelector(`[name="watchlist"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputClick);
+      .removeEventListener(`click`, this._onCheckboxControlInputWatchlistClick);
     this._element
       .querySelector(`[name="watched"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputClick);
+      .removeEventListener(`click`, this._onCheckboxControlInputWatchedClick);
     this._element
       .querySelector(`[name="favorite"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputClick);
+      .removeEventListener(`click`, this._onCheckboxControlInputFavoriteClick);
     this._element
       .querySelector(`.film-details__watched-reset`)
       .removeEventListener(`click`, this._onButtonUndoClick);
