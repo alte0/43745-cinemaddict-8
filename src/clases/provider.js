@@ -4,7 +4,7 @@ const objectToArray = (object) => {
   return Object.keys(object).map((id) => object[id]);
 };
 
-class Provider {
+export class Provider {
   constructor({api, store}) {
     this._api = api;
     this._store = store;
@@ -49,5 +49,3 @@ class Provider {
     return this._api.syncTasks({tasks: objectToArray(this._store.getAll())});
   }
 }
-
-export {Provider};

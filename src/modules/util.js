@@ -212,19 +212,19 @@ const sliceForShowMovies = (arr, start = 0, end) => {
  */
 const setRankUser = (el, arr) => {
   const RankType = {
-    novice: `Novice`,
-    fan: `Fan`,
-    movieBuff: `Movie buff`,
+    NOVICE: `Novice`,
+    FAN: `Fan`,
+    MOVIE_BUF: `Movie buff`,
   };
   const length = arr.length;
   let rank = ``;
 
   if (length > 1 && length <= 10) {
-    rank = RankType.novice;
+    rank = RankType.NOVICE;
   } else if (length > 11 && length <= 20) {
-    rank = RankType.fan;
+    rank = RankType.FAN;
   } else if (length > 21) {
-    rank = RankType.movieBuff;
+    rank = RankType.MOVIE_BUF;
   }
 
   el.innerHTML = `<p class="profile__rating">${rank}</p>`;
@@ -246,7 +246,6 @@ const recordNumberOfFilterValues = (el, arr) => {
  * Фильтрация фильмов по параметру filterName для статистики
  * @param {String} filterName
  * @param {Array} initialFilms
- * @param {String} text для поиска по введеным данным
  * @return {Array}
  */
 const filterFilmsForStatictic = (filterName, initialFilms) => {

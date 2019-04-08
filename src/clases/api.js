@@ -19,7 +19,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
-const API = class {
+export const API = class {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -59,5 +59,3 @@ const API = class {
       .then(checkStatus);
   }
 };
-
-export {API};

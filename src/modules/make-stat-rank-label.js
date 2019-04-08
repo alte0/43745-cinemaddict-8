@@ -1,6 +1,6 @@
 import {renderTempate} from "./util";
 /**
- * Отрисовывает ранг в статистике
+ * Отрисовывает ранг в статистике .statistic__rank
  * @param {Array} data
  * @param {HTMLElement} el
  */

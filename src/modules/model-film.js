@@ -1,4 +1,4 @@
-class ModelFilm {
+export class ModelFilm {
   constructor(data) {
     this.id = data.id;
     this.comments = data.comments;
@@ -61,5 +61,3 @@ class ModelFilm {
     return data.map(ModelFilm.parseFilm);
   }
 }
-
-export {ModelFilm};

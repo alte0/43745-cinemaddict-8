@@ -1,7 +1,7 @@
 import {renderTempate} from "./util";
 import moment from "moment";
 /**
- * Отрисовывает статистику в списке ul
+ * Отрисовывает статистику в списке ul.statistic__text-list
  * @param {Array} data
  * @param {HTMLElement} el
  */

@@ -2,50 +2,17 @@ import Component from "./сomponent";
 import moment from "moment";
 import {createElement, setDefaulStyle, setBlockElem, deleteEl} from "../modules/util";
 
-const EMOJIS = {
+const EmojiType = {
   "sleeping": `😴`,
   "neutral-face": `😐`,
   "grinning": `😀`,
 };
-const Keycode = {
+const KeyCodeType = {
   KEYCODE_ENTER: 13,
   KEYCODE_ESC: 27,
 };
-/**
- * @param {Number} scoreUser
- * @return {string}
- */
-const createControlSelectScore = (scoreUser) => {
-  const arr = [];
-  for (let i = 1; i < 10; i++) {
-    arr.push(`
-      <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i}" id="rating-${i}" ${i === +scoreUser ? `checked` : ``}><label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
-      `.trim());
-  }
-  return arr.join(``);
-};
-/**
- * @param {Array} arr
- * @return {string}
- */
-const createComments = (arr) => (
-  `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${arr.length}</span></h3><ul class="film-details__comments-list">
-    ${arr.map((objComment) => (`
-      <li class="film-details__comment">
-        <span class="film-details__comment-emoji">${EMOJIS[objComment.emotion] === undefined ? `` : EMOJIS[objComment.emotion]}</span>
-        <div>
-          <p class="film-details__comment-text">${objComment.comment}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${objComment.author}</span>
-            <span class="film-details__comment-day">${moment(objComment.date).fromNow()}</span>
-          </p>
-        </div>
-      </li>
-      `).trim()).join(``)}
-  </ul >`
-);
 
-export default class PopapCard extends Component {
+export default class PopupCard extends Component {
   constructor(data) {
     super();
 
@@ -70,7 +37,7 @@ export default class PopapCard extends Component {
     this._isFavorite = data.isFavorite;
     this._statusComment = ``;
 
-    this._onClosePopup = null;
+    this._onClose = null;
     this._onTextareaKeyDown = null;
     this._onRadioRatingChange = null;
     this._addWatchlist = null;
@@ -173,7 +140,7 @@ export default class PopapCard extends Component {
 
           <section class="film-details__comments-wrap">
 
-            ${createComments(this._comments)}
+            ${this._createComments(this._comments)}
 
             <div class="film-details__new-comment">
               <div>
@@ -214,7 +181,7 @@ export default class PopapCard extends Component {
                 <p class="film-details__user-rating-feelings">How you feel it?</p>
 
                 <div class="film-details__user-rating-score">
-                 ${createControlSelectScore(this._ratingUser)}
+                 ${this._createControlSelectScore(this._ratingUser)}
                 </div>
               </section>
             </div>
@@ -225,7 +192,7 @@ export default class PopapCard extends Component {
   }
 
   set close(fn) {
-    this._onClosePopup = fn;
+    this._onClose = fn;
   }
   set onTextareaKeyDown(fn) {
     this._onTextareaKeyDown = fn;
@@ -249,6 +216,43 @@ export default class PopapCard extends Component {
 
   set onButtonUndoCommentClick(fn) {
     this._onButtonUndoCommentClick = fn;
+  }
+  /**
+   * @param {Number} scoreUser
+   * @return {string}
+   */
+  _createControlSelectScore(scoreUser) {
+    const arr = [];
+
+    for (let i = 1; i < 10; i++) {
+      arr.push(`
+      <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i}" id="rating-${i}" ${i === +scoreUser ? `checked` : ``}><label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
+      `.trim());
+    }
+
+    return arr.join(``);
+  }
+
+  /**
+   * @param {Array} arr
+   * @return {string}
+   */
+  _createComments(arr) {
+    return `
+    <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${arr.length}</span></h3><ul class="film-details__comments-list">
+    ${arr.map((objComment) => (`
+      <li class="film-details__comment">
+        <span class="film-details__comment-emoji">${EmojiType[objComment.emotion] === undefined ? `` : EmojiType[objComment.emotion]}</span>
+        <div>
+          <p class="film-details__comment-text">${objComment.comment}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${objComment.author}</span>
+            <span class="film-details__comment-day">${moment(objComment.date).fromNow()}</span>
+          </p>
+        </div>
+      </li>
+      `).trim()).join(``)}
+    </ul >`.trim();
   }
 
   _collectFormData() {
@@ -276,7 +280,7 @@ export default class PopapCard extends Component {
       }
     };
 
-    const popapCardEditMapper = PopapCard.createMapper(entry);
+    const popapCardEditMapper = PopupCard.createMapper(entry);
 
     for (const pair of formData.entries()) {
       let [key, value] = pair;
@@ -307,7 +311,7 @@ export default class PopapCard extends Component {
     deleteEl(commentsWrap, commentsTitle);
     deleteEl(commentsWrap, commentsList);
 
-    const newComments = createComments(this._comments);
+    const newComments = this._createComments(this._comments);
     commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
   }
   /**
@@ -345,7 +349,7 @@ export default class PopapCard extends Component {
     const target = evt.target;
     const selectEmoji = target.value;
     const emojiAdd = this._element.querySelector(`.film-details__add-emoji-label`);
-    emojiAdd.textContent = EMOJIS[selectEmoji];
+    emojiAdd.textContent = EmojiType[selectEmoji];
   }
 
   _onKeydownEnter(evt) {
@@ -353,7 +357,7 @@ export default class PopapCard extends Component {
     const target = evt.target;
     const parentEl = evt.target.parentElement;
 
-    if (evt.metaKey || evt.ctrlKey && (keyCode === Keycode.KEYCODE_ENTER && target.value !== ``)) {
+    if (evt.metaKey || evt.ctrlKey && (keyCode === KeyCodeType.KEYCODE_ENTER && target.value !== ``)) {
       const newData = this._collectFormData();
 
       setDefaulStyle(parentEl);
@@ -408,14 +412,14 @@ export default class PopapCard extends Component {
   }
 
   _onButtonClick() {
-    if (typeof this._onClosePopup === `function`) {
-      this._onClosePopup();
+    if (typeof this._onClose === `function`) {
+      this._onClose();
     }
   }
 
   _onWindowEscKeyDown(evt) {
-    if (evt.keyCode === Keycode.KEYCODE_ESC) {
-      this._onClosePopup();
+    if (evt.keyCode === KeyCodeType.KEYCODE_ESC) {
+      this._onClose();
     }
   }
 

@@ -10,7 +10,7 @@ toastr.options = {
   "onclick": null,
   "showDuration": `300`,
   "hideDuration": `1000`,
-  "timeOut": `5000`,
+  "timeOut": `3000`,
   "extendedTimeOut": `1000`,
   "showEasing": `swing`,
   "hideEasing": `linear`,
@@ -19,7 +19,7 @@ toastr.options = {
 };
 /**
  * Сообщение для пользователя
- * @param {String} type (`info`, `success`, `Warning`, `Error`)
+ * @param {String} type (`info`, `success`, `warning`, `error`)
  * @param {String} message `text`
  * @param {String} title `text`
  */

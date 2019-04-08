@@ -1,4 +1,4 @@
-export const filters = [
+export const navFilters = [
   {
     caption: `All movies`,
     get href() {
