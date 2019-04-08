@@ -42,7 +42,7 @@ const API = class {
       .then(ModelFilm.parseFilm);
   }
 
-  syncTasks({tasks}) {
+  syncMovies({tasks}) {
     return this._load({
       url: `movies/sync`,
       method: `POST`,
