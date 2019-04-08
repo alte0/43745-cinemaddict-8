@@ -16,7 +16,7 @@ export default class ComponentCard extends Component {
     this._alternativeTitle = data.alternativeTitle;
     this._rating = data.rating;
     this._year = moment(data.releaseDate).isValid() ? moment(data.releaseDate).format(`YYYY`) : ``;
-    this._duration = moment.duration(data.duration, `minutes`).hours() + ` h ` + moment.duration(data.duration, `minutes`).minutes() + ` m`;
+    this._duration = moment.duration(data.duration, `minutes`).hours() + `:` + moment.duration(data.duration, `minutes`).minutes();
     this._genres = data.genres;
     this._imgSource = data.imgSource;
     this._description = data.description;

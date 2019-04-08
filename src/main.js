@@ -1,7 +1,7 @@
 import {
   renderFilters,
   clearChildEl,
-  calculateStat,
+  filterFilmsForStatictic,
   filterFilms,
   updateFilmData,
   setDefaulStyle,
@@ -24,8 +24,10 @@ import {API} from "./clases/api";
 import {Provider} from "./clases/provider";
 import {Store} from "./clases/store";
 import {showMessage, TypeMessage} from "./modules/show-user-message";
+import Search from "./clases/search";
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test3`;
+
+const AUTHORIZATION = `Basic eo0w590ik29889a=Alte0=test7`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 const FILMS_STORE_KEY = `films-store-key-dev`;
 
@@ -39,21 +41,23 @@ const Text = {
   WATCH: `Added to watch list!`,
   VIEWED: `Added to viewed!`,
   FAVORITES: `Added to favorites!`,
-  REMOVE_FAVORITES: `Removed from favorites!`
+  REMOVE_FAVORITES: `Removed from favorites!`,
+  ALREADY_IN_LIST: `Already in the list!`,
+  ALREADY_VIEWED: `Already viewed!`,
 };
 const COUNT_START_SHOW_MOVIES = 0;
 const COUNT_END_SHOW_MOVIES = 5;
 const COUNT_END_SHOW_MOVIES_EXTRA = 2;
 const FILTER_NAME_TOP_RATED = `Most rated`;
 const FILTER_NAME_TOP_COMMENTED = `Most commented`;
+const FILTER_NAME_WATCHED = `#history`;
 
 const body = document.body;
-const searchForm = body.querySelector(`.search`);
-const searchField = body.querySelector(`.search__field`);
 const mainNav = body.querySelector(`.main-navigation`);
 const films = body.querySelector(`.films`);
 const btnShowMore = films.querySelector(`.films-list__show-more`);
 const statistic = body.querySelector(`.statistic`);
+const statisticFilters = statistic.querySelector(`.statistic__filters`);
 const statisticRank = body.querySelector(`.statistic__rank`);
 const statisticList = body.querySelector(`.statistic__text-list`);
 const statisticCtx = body.querySelector(`.statistic__chart`);
@@ -81,37 +85,47 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
 
     cardComponent.open = () => {
       if (!body.querySelector(`.film-details`)) {
-        popupCardComponent.render(body);
+        body.appendChild(popupCardComponent.render());
       }
     };
 
     cardComponent.onAddToWatchList = (boolValue) => {
-      dataCard.isWatchlist = boolValue;
-      provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
-        .then((newDataMovie) => {
-          popupCardComponent.update(newDataMovie);
-          recordNumberOfFilterValues(mainNav, initialMovies);
-          showMessage(TypeMessage.SUCCESS, Text.WATCH);
-        });
+      if (dataCard.isWatchlist) {
+        showMessage(TypeMessage.INFO, Text.ALREADY_IN_LIST);
+      } else {
+        dataCard.isWatchlist = boolValue;
+        provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+          .then((dataMovie) => {
+            popupCardComponent.update(dataMovie);
+            recordNumberOfFilterValues(mainNav, initialMovies);
+            showMessage(TypeMessage.SUCCESS, Text.WATCH);
+          });
+      }
     };
 
     cardComponent.onMarkAsWatched = (boolValue) => {
-      dataCard.isWatched = boolValue;
-      provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
-        .then((newDataMovie) => {
-          popupCardComponent.update(newDataMovie);
-          recordNumberOfFilterValues(mainNav, initialMovies);
-          showMessage(TypeMessage.SUCCESS, Text.VIEWED);
-        });
+      if (dataCard.isWatched) {
+        showMessage(TypeMessage.INFO, Text.ALREADY_VIEWED);
+      } else {
+        dataCard.isWatched = boolValue;
+        dataCard.watchingDate = +new Date();
+        provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
+          .then((dataMovie) => {
+            popupCardComponent.update(dataMovie);
+            recordNumberOfFilterValues(mainNav, initialMovies);
+            showMessage(TypeMessage.SUCCESS, Text.VIEWED);
+            setRankUser(profile, filterFilms(FILTER_NAME_WATCHED, initialMovies));
+          });
+      }
     };
 
     cardComponent.onFavorite = (boolValue) => {
       dataCard.isFavorite = boolValue;
       provider.updateMovie({id: dataCard.id, data: dataCard.toRAW()})
-        .then((newDataMovie) => {
-          popupCardComponent.update(newDataMovie);
+        .then((dataMovie) => {
+          popupCardComponent.update(dataMovie);
           recordNumberOfFilterValues(mainNav, initialMovies);
-          if (dataCard.isFavorite) {
+          if (dataMovie.isFavorite) {
             showMessage(TypeMessage.SUCCESS, Text.FAVORITES);
           } else {
             showMessage(TypeMessage.SUCCESS, Text.REMOVE_FAVORITES);
@@ -125,21 +139,24 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
       this._element = null;
     };
 
-    popupCardComponent.onTextareaKeyDown = (newObject) => {
+    popupCardComponent.onTextareaKeyDown = (newData) => {
       const textArea = body.querySelector(`.film-details__comment-input`);
       const userRatingControls = body.querySelector(`.film-details__user-rating-controls`);
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
 
-      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-        .then((newDataMovie) => {
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+        .then((dataMovie) => {
           userRatingControls.classList.remove(`visually-hidden`);
-          cardComponent.update(newDataMovie);
+          cardComponent.update(dataMovie);
           cardComponent.partialUpdate();
           cardComponent.unbind();
           cardComponent.bind();
 
-          popupCardComponent.update(newDataMovie);
+          popupCardComponent.update(dataMovie);
           popupCardComponent.partialUpdateComments();
+          popupCardComponent.setStatusCommentAdd();
+          popupCardComponent.unbind();
+          popupCardComponent.bind();
 
           textArea.value = ``;
           setUnBlockElem(textArea);
@@ -152,7 +169,7 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         });
     };
 
-    popupCardComponent.onRadioRatingChange = (newObject, evt) => {
+    popupCardComponent.onRadioRatingChange = (newData, evt) => {
       const target = evt.target;
       const ratingInputs = evt.target.parentElement.querySelectorAll(`[name="score"]`);
       const ratingLabels = evt.target.parentElement.querySelectorAll(`.film-details__user-rating-label`);
@@ -165,13 +182,13 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         setBlockElem(elem);
       });
 
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
 
-      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-      .then((newDataMovie) => {
-        cardComponent.update(newDataMovie);
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+      .then((dataMovie) => {
+        cardComponent.update(dataMovie);
 
-        popupCardComponent.update(newDataMovie);
+        popupCardComponent.update(dataMovie);
         popupCardComponent.partialUpdateRating();
 
         ratingInputs.forEach((elem) => {
@@ -186,31 +203,64 @@ const renderCards = (arr, el, ClsCard, ClsPopup) => {
         });
     };
 
-    popupCardComponent.onCheckboxControlClick = (newObject) => {
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
+    popupCardComponent.addWatchlist = (newData) => {
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
 
-      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-        .then((newDataMovie) => {
-          cardComponent.update(newDataMovie);
-          popupCardComponent.update(newDataMovie);
-          popupCardComponent.partialUpdateStatus();
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+        .then((dataMovie) => {
+          cardComponent.update(dataMovie);
+          popupCardComponent.update(dataMovie);
           recordNumberOfFilterValues(mainNav, initialMovies);
         });
     };
 
-    popupCardComponent.onButtonUndoCommentClick = (newObject) => {
-      const newDataCard = updateFilmData(arr, dataCard, newObject);
+    popupCardComponent.addWatched = (newData) => {
+      if (newData.isWatched) {
+        Object.assign(newData, {watchingDate: +new Date()});
+      } else {
+        Object.assign(newData, {watchingDate: null});
+      }
 
-      provider.updateMovie({id: newDataCard.id, data: newDataCard.toRAW()})
-        .then((newDataMovie) => {
-          cardComponent.update(newDataMovie);
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
+
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+        .then((dataMovie) => {
+          cardComponent.update(dataMovie);
+          popupCardComponent.update(dataMovie);
+          recordNumberOfFilterValues(mainNav, initialMovies);
+        });
+    };
+
+    popupCardComponent.toggleFavorites = (newData) => {
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
+
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+        .then((dataMovie) => {
+          cardComponent.update(dataMovie);
+          popupCardComponent.update(dataMovie);
+          recordNumberOfFilterValues(mainNav, initialMovies);
+          if (dataMovie.isFavorite) {
+            showMessage(TypeMessage.SUCCESS, Text.FAVORITES);
+          } else {
+            showMessage(TypeMessage.SUCCESS, Text.REMOVE_FAVORITES);
+          }
+        });
+    };
+
+    popupCardComponent.onButtonUndoCommentClick = (newData) => {
+      const newDataMovie = updateFilmData(arr, dataCard, newData);
+
+      provider.updateMovie({id: newDataMovie.id, data: newDataMovie.toRAW()})
+        .then((dataMovie) => {
+          cardComponent.update(dataMovie);
           cardComponent.partialUpdate();
           cardComponent.unbind();
           cardComponent.bind();
 
-          popupCardComponent.update(newDataMovie);
+          popupCardComponent.update(dataMovie);
           popupCardComponent.partialUpdateComments();
-          renderCards(sliceForShowMovies(filterFilms(FILTER_NAME_TOP_COMMENTED, initialMovies), COUNT_START_SHOW_MOVIES, COUNT_END_SHOW_MOVIES_EXTRA), filmsCardsContainerExtraMost, CardExtra, PopupCard);
+          const newMoviesTopComments = filterFilms(FILTER_NAME_TOP_COMMENTED, initialMovies);
+          renderCards(sliceForShowMovies(newMoviesTopComments, COUNT_START_SHOW_MOVIES, COUNT_END_SHOW_MOVIES_EXTRA), filmsCardsContainerExtraMost, CardExtra, PopupCard);
         });
     };
 
@@ -250,9 +300,10 @@ const filterCardsFilms = (evt) => {
   }
 
   if ((targetTagName === `A` && target.classList.contains(`main-navigation__item--additional`))) {
-    const statData = calculateStat(initialMovies);
+    const filterNameStat = Array.from(new FormData(statisticFilters).entries())[0][1];
     clearChildEl(statisticList);
     clearChildEl(statisticRank);
+    const statData = filterFilmsForStatictic(filterNameStat, initialMovies);
     renderStatRankLabel(statData, statisticRank);
     renderStatList(statData, statisticList);
     getStaticCtx(statisticCtx, statData);
@@ -275,7 +326,8 @@ const onButtonMoreClick = (evt) => {
 
 const onInputSearchInput = (evt) => {
   const textSearch = evt.target.value;
-
+  statistic.classList.add(`visually-hidden`);
+  films.classList.remove(`visually-hidden`);
   clearChildEl(filmsCardsContainer);
 
   if (textSearch === ``) {
@@ -298,18 +350,9 @@ const onInputSearchInput = (evt) => {
   }
 };
 
-window.addEventListener(`offline`, () => {
-  document.title = `${document.title}[OFFLINE]`;
-});
-window.addEventListener(`online`, () => {
-  document.title = document.title.split(`[OFFLINE]`)[0];
-  provider.syncTasks();
-});
-btnShowMore.addEventListener(`click`, onButtonMoreClick);
-searchField.addEventListener(`input`, onInputSearchInput);
-searchForm.addEventListener(`submit`, (evt) => {
-  evt.preventDefault();
-});
+const searchField = new Search();
+searchField.search = onInputSearchInput;
+profile.parentElement.insertBefore(searchField.render(), profile);
 
 provider.getMovies()
   .then((dataFilms) => {
@@ -322,7 +365,7 @@ provider.getMovies()
     renderCards(sliceForShowMovies(filterFilms(FILTER_NAME_TOP_COMMENTED, initialMovies), COUNT_START_SHOW_MOVIES, COUNT_END_SHOW_MOVIES_EXTRA), filmsCardsContainerExtraMost, CardExtra, PopupCard);
     recordNumberOfFilterValues(mainNav, initialMovies);
     footerStat.innerHTML = `<p>${initialMovies.length} movies inside</p>`;
-    setRankUser(profile, initialMovies);
+    setRankUser(profile, filterFilms(FILTER_NAME_WATCHED, initialMovies));
   })
   .catch((err) => {
     clearChildEl(filmsCardsContainer);
@@ -330,3 +373,20 @@ provider.getMovies()
     throw err;
   });
 
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncMovies();
+});
+btnShowMore.addEventListener(`click`, onButtonMoreClick);
+
+statisticFilters.addEventListener(`change`, (evt) => {
+  clearChildEl(statisticList);
+  clearChildEl(statisticRank);
+  const statData = filterFilmsForStatictic(evt.target.value, initialMovies);
+  renderStatRankLabel(statData, statisticRank);
+  renderStatList(statData, statisticList);
+  getStaticCtx(statisticCtx, statData);
+});

@@ -19,6 +19,7 @@ class ModelFilm {
     this.isFavorite = data.user_details.favorite;
     this.isWatchlist = data.user_details.watchlist;
     this.ratingUser = data.user_details.personal_rating;
+    this.watchingDate = data.user_details.watching_date;
   }
 
   toRAW() {
@@ -45,7 +46,8 @@ class ModelFilm {
         "personal_rating": this.ratingUser,
         "watchlist": this.isWatchlist,
         "already_watched": this.isWatched,
-        "favorite": this.isFavorite
+        "favorite": this.isFavorite,
+        "watching_date": this.watchingDate
       },
       "comments": this.comments
     };

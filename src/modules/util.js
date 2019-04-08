@@ -104,7 +104,7 @@ const calculateStat = (arr) => {
   }
 
   initiaStaticList.statForCanvas = getStatForCanvas(initiaStaticList.genres);
-  initiaStaticList.topGenre = initiaStaticList.statForCanvas.labels[0];
+  initiaStaticList.topGenre = initiaStaticList.statForCanvas.labels[0] !== undefined ? initiaStaticList.statForCanvas.labels[0] : `n/d`;
 
   return initiaStaticList;
 };
@@ -242,12 +242,57 @@ const recordNumberOfFilterValues = (el, arr) => {
     itemCount.textContent = filterFilms(filterNameParent, arr).length;
   });
 };
+/**
+ * Фильтрация фильмов по параметру filterName для статистики
+ * @param {String} filterName
+ * @param {Array} initialFilms
+ * @param {String} text для поиска по введеным данным
+ * @return {Array}
+ */
+const filterFilmsForStatictic = (filterName, initialFilms) => {
+  switch (filterName) {
+    case `all-time`:
+      return calculateStat(initialFilms);
+
+    case `today`:
+      const today = `${new Date().getFullYear()}${new Date().getMonth()}${new Date().getDate()}`;
+      const filmsToday = initialFilms.filter((film) => {
+        const filmWatchDate = film.watchingDate;
+        const filmDay = `${new Date(filmWatchDate).getFullYear()}${new Date(filmWatchDate).getMonth()}${new Date(filmWatchDate).getDate()}`;
+        return filmDay === today;
+      });
+      return calculateStat(filmsToday);
+
+    case `week`:
+      const daysInWeek = 7;
+      const startWeek = +new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - daysInWeek);
+      const filmsWeek = initialFilms.filter((film) => +new Date(film.watchingDate) >= startWeek);
+      return calculateStat(filmsWeek);
+
+    case `month`:
+      const todayMonthAndYear = `${new Date().getFullYear()}${new Date().getMonth()}`;
+      const filmsMonth = initialFilms.filter((film) => {
+        const filmWatchDate = film.watchingDate;
+        const filmMonthAndYear = `${new Date(filmWatchDate).getFullYear()}${new Date(filmWatchDate).getMonth()}`;
+        return filmMonthAndYear === todayMonthAndYear;
+      });
+      return calculateStat(filmsMonth);
+
+    case `year`:
+      const todayYear = new Date().getFullYear();
+      const filmsYear = initialFilms.filter((film) => new Date(film.watchingDate).getFullYear() === todayYear);
+      return calculateStat(filmsYear);
+
+    default:
+      return calculateStat(initialFilms);
+  }
+};
 
 export {
   clearChildEl,
   renderFilters,
   createElement,
-  calculateStat,
+  filterFilmsForStatictic,
   deleteEl,
   renderTempate,
   filterFilms,
