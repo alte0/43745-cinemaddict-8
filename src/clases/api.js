@@ -6,13 +6,16 @@ const Method = {
   PUT: `PUT`,
   DELETE: `DELETE`
 };
+const GoodResponse = {
+  START_RESPONSE: 200,
+  END_RESPONSE: 300,
+};
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= GoodResponse.START_RESPONSE && response.status < GoodResponse.END_RESPONSE) {
     return response;
-  } else {
-    throw new Error(`${response.status}: ${response.statusText}`);
   }
+  throw new Error(`${response.status}: ${response.statusText}`);
 };
 
 const toJSON = (response) => {
@@ -23,6 +26,13 @@ export const API = class {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
+  }
+
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
+    headers.append(`Authorization`, this._authorization);
+
+    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
+      .then(checkStatus);
   }
 
   getMovies() {
@@ -50,12 +60,5 @@ export const API = class {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON);
-  }
-
-  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
-    headers.append(`Authorization`, this._authorization);
-
-    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus);
   }
 };

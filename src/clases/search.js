@@ -28,17 +28,17 @@ export default class Search extends Component {
     }
   }
 
-  _onFormSubmit(evt) {
-    evt.preventDefault();
-  }
-
   bind() {
     this._element.querySelector(`.search__field`).addEventListener(`input`, this._onInputSearchInput);
-    this._element.addEventListener(`input`, this._onFormSubmit);
+    this._element.addEventListener(`input`, Search.onFormSubmit);
   }
 
   unbind() {
     this._element.querySelector(`.search__field`).removeEventListener(`input`, this._onInputSearchInput);
-    this._element.removeEventListener(`input`, this._onFormSubmit);
+    this._element.removeEventListener(`input`, Search.onFormSubmit);
+  }
+
+  static onFormSubmit(evt) {
+    evt.preventDefault();
   }
 }

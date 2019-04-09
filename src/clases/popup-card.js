@@ -223,8 +223,10 @@ export default class PopupCard extends Component {
    */
   _createControlSelectScore(scoreUser) {
     const arr = [];
+    const startCountInput = 1;
+    const endCountInput = 10;
 
-    for (let i = 1; i < 10; i++) {
+    for (let i = startCountInput; i < endCountInput; i++) {
       arr.push(`
       <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i}" id="rating-${i}" ${i === +scoreUser ? `checked` : ``}><label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
       `.trim());
@@ -232,7 +234,6 @@ export default class PopupCard extends Component {
 
     return arr.join(``);
   }
-
   /**
    * @param {Array} arr
    * @return {string}
@@ -431,17 +432,6 @@ export default class PopupCard extends Component {
     this._comments = data.comments;
   }
 
-  static createMapper(target) {
-    return {
-      score: (value) => (target.ratingUser = value),
-      watchlist: (value) => (target.isWatchlist = value === `on`),
-      watched: (value) => (target.isWatched = value === `on`),
-      favorite: (value) => (target.isFavorite = value === `on`),
-      comment: (value) => (target.comments.comment = value),
-      commentEmoji: (value) => (target.comments.emotion = value)
-    };
-  }
-
   bind() {
     this._element
       .querySelector(`.film-details__close-btn`)
@@ -498,5 +488,16 @@ export default class PopupCard extends Component {
     this._element
       .querySelector(`.film-details__watched-reset`)
       .removeEventListener(`click`, this._onButtonUndoClick);
+  }
+
+  static createMapper(target) {
+    return {
+      score: (value) => (target.ratingUser = value),
+      watchlist: (value) => (target.isWatchlist = value === `on`),
+      watched: (value) => (target.isWatched = value === `on`),
+      favorite: (value) => (target.isFavorite = value === `on`),
+      comment: (value) => (target.comments.comment = value),
+      commentEmoji: (value) => (target.comments.emotion = value)
+    };
   }
 }

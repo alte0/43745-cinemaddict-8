@@ -166,16 +166,12 @@ const setUnBlockElem = (el) => {
   el.disabled = false;
 };
 /**
- * Установка дефолтны стилей/удаление стилей об ошибке
+ * Установка дефолтных стилей/удаление стилей об ошибке
  * @param {HTMLElement} el
  * @param {Boolean} bool
  */
 const setDefaulStyle = (el, bool = true) => {
-  if (bool) {
-    el.style.border = ``;
-  } else {
-    el.style.backgroundColor = ``;
-  }
+  el.style[bool ? `border` : `backgroundColor`] = ``;
   el.classList.remove(`shake`);
 };
 /**
@@ -184,11 +180,7 @@ const setDefaulStyle = (el, bool = true) => {
  * @param {Boolean} bool
  */
 const setErrorStyle = (el, bool = true) => {
-  if (bool) {
-    el.style.border = `5px solid red`;
-  } else {
-    el.style.backgroundColor = `red`;
-  }
+  el.style[bool ? `border` : `backgroundColor`] = `${bool ? `5px solid red` : `red`}`;
   el.classList.add(`shake`);
 };
 /**
@@ -212,19 +204,30 @@ const sliceForShowMovies = (arr, start = 0, end) => {
  */
 const setRankUser = (el, arr) => {
   const RankType = {
-    NOVICE: `Novice`,
-    FAN: `Fan`,
-    MOVIE_BUF: `Movie buff`,
+    NOVICE: {
+      TEXT: `Novice`,
+      START_RANK: 1,
+      END_RANK: 10
+    },
+    FAN: {
+      TEXT: `Fan`,
+      START_RANK: 11,
+      END_RANK: 20
+    },
+    MOVIE_BUF: {
+      TEXT: `Movie buff`,
+      START_RANK: 21,
+    },
   };
   const length = arr.length;
   let rank = ``;
 
-  if (length > 1 && length <= 10) {
-    rank = RankType.NOVICE;
-  } else if (length > 11 && length <= 20) {
-    rank = RankType.FAN;
-  } else if (length > 21) {
-    rank = RankType.MOVIE_BUF;
+  if (length > RankType.NOVICE.START_RANK && length <= RankType.NOVICE.END_RANK) {
+    rank = RankType.NOVICE.TEXT;
+  } else if (length > RankType.FAN.START_RANK && length <= RankType.FAN.END_RANK) {
+    rank = RankType.FAN.TEXT;
+  } else if (length > RankType.MOVIE_BUF.START_RANK) {
+    rank = RankType.MOVIE_BUF.TEXT;
   }
 
   el.innerHTML = `<p class="profile__rating">${rank}</p>`;

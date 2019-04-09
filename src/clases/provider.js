@@ -11,12 +11,8 @@ export class Provider {
     this._needSync = false;
   }
 
-  _isOnline() {
-    return window.navigator.onLine;
-  }
-
   updateMovie({id, data}) {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.updateMovie({id, data})
       .then((movie) => {
         this._store.setItem({key: movie.id, item: movie.toRAW()});
@@ -31,7 +27,7 @@ export class Provider {
   }
 
   getMovies() {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.getMovies()
       .then((movies) => {
         movies.map((movie) => this._store.setItem({key: movie.id, item: movie.toRAW()}));
@@ -47,5 +43,9 @@ export class Provider {
 
   syncMovies() {
     return this._api.syncMovies({movie: objectToArray(this._store.getAll())});
+  }
+
+  static isOnline() {
+    return window.navigator.onLine;
   }
 }
