@@ -6,7 +6,8 @@ export default class Search extends Component {
 
     this._search = null;
 
-    this.onInputSearchInput = this.onInputSearchInput.bind(this);
+    this._onInputSearchInput = this._onInputSearchInput.bind(this);
+    this._onFormSubmit = this._onFormSubmit.bind(this);
   }
 
   get template() {
@@ -23,22 +24,22 @@ export default class Search extends Component {
   }
 
   bind() {
-    this._element.querySelector(`.search__field`).addEventListener(`input`, this.onInputSearchInput);
-    this._element.addEventListener(`input`, this.onFormSubmit);
+    this._element.querySelector(`.search__field`).addEventListener(`input`, this._onInputSearchInput);
+    this._element.addEventListener(`input`, this._onFormSubmit);
   }
 
   unbind() {
-    this._element.querySelector(`.search__field`).removeEventListener(`input`, this.onInputSearchInput);
-    this._element.removeEventListener(`input`, this.onFormSubmit);
+    this._element.querySelector(`.search__field`).removeEventListener(`input`, this._onInputSearchInput);
+    this._element.removeEventListener(`input`, this._onFormSubmit);
   }
 
-  onInputSearchInput(evt) {
+  _onInputSearchInput(evt) {
     if (typeof this._search === `function`) {
       this._search(evt);
     }
   }
 
-  onFormSubmit(evt) {
+  _onFormSubmit(evt) {
     evt.preventDefault();
   }
 }

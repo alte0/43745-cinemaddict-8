@@ -12,7 +12,7 @@ export default class ComponentFilter extends Component {
 
     this._onFilter = null;
 
-    this.onLinkClick = this.onLinkClick.bind(this);
+    this._onLinkClick = this._onLinkClick.bind(this);
   }
 
   get template() {
@@ -27,14 +27,14 @@ export default class ComponentFilter extends Component {
   }
 
   bind() {
-    this._element.addEventListener(`click`, this.onLinkClick);
+    this._element.addEventListener(`click`, this._onLinkClick);
   }
 
   unbind() {
-    this._element.removeEventListener(`click`, this.onLinkClick);
+    this._element.removeEventListener(`click`, this._onLinkClick);
   }
 
-  onLinkClick(evt) {
+  _onLinkClick(evt) {
     if (typeof this._onFilter === `function`) {
       this._onFilter(evt);
     }

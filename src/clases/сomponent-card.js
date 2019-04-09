@@ -29,10 +29,10 @@ export default class ComponentCard extends Component {
     this._onAddToWatchList = null;
     this._onMarkAsWatched = null;
 
-    this.onButtonClick = this.onButtonClick.bind(this);
-    this.onButtonAddWatchlistClick = this.onButtonAddWatchlistClick.bind(this);
-    this.onButtonMarkAsWatchedClick = this.onButtonMarkAsWatchedClick.bind(this);
-    this.onButtonFavoriteClick = this.onButtonFavoriteClick.bind(this);
+    this._onButtonClick = this._onButtonClick.bind(this);
+    this._onButtonAddWatchlistClick = this._onButtonAddWatchlistClick.bind(this);
+    this._onButtonMarkAsWatchedClick = this._onButtonMarkAsWatchedClick.bind(this);
+    this._onButtonFavoriteClick = this._onButtonFavoriteClick.bind(this);
   }
 
   set open(fn) {
@@ -76,37 +76,37 @@ export default class ComponentCard extends Component {
 
   bind() {
     this._element.querySelector(`.film-card__comments`)
-      .addEventListener(`click`, this.onButtonClick);
+      .addEventListener(`click`, this._onButtonClick);
     if (this._element.querySelector(`.film-card__controls`)) {
       this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
-        .addEventListener(`click`, this.onButtonAddWatchlistClick);
+        .addEventListener(`click`, this._onButtonAddWatchlistClick);
       this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
-        .addEventListener(`click`, this.onButtonMarkAsWatchedClick);
+        .addEventListener(`click`, this._onButtonMarkAsWatchedClick);
       this._element.querySelector(`.film-card__controls-item--favorite`)
-        .addEventListener(`click`, this.onButtonFavoriteClick);
+        .addEventListener(`click`, this._onButtonFavoriteClick);
     }
   }
 
   unbind() {
     this._element.querySelector(`.film-card__comments`)
-      .removeEventListener(`click`, this.onButtonClick);
+      .removeEventListener(`click`, this._onButtonClick);
     if (this._element.querySelector(`.film-card__controls`)) {
       this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
-        .removeEventListener(`click`, this.onButtonAddWatchlistClick);
+        .removeEventListener(`click`, this._onButtonAddWatchlistClick);
       this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
-        .removeEventListener(`click`, this.onButtonMarkAsWatchedClick);
+        .removeEventListener(`click`, this._onButtonMarkAsWatchedClick);
       this._element.querySelector(`.film-card__controls-item--favorite`)
-        .removeEventListener(`click`, this.onButtonFavoriteClick);
+        .removeEventListener(`click`, this._onButtonFavoriteClick);
     }
   }
 
-  onButtonClick() {
+  _onButtonClick() {
     if (typeof this._open === `function`) {
       this._open();
     }
   }
 
-  onButtonAddWatchlistClick(evt) {
+  _onButtonAddWatchlistClick(evt) {
     evt.preventDefault();
     if (typeof this._onAddToWatchList === `function`) {
       this._isWatchlist = true;
@@ -114,7 +114,7 @@ export default class ComponentCard extends Component {
     }
   }
 
-  onButtonMarkAsWatchedClick(evt) {
+  _onButtonMarkAsWatchedClick(evt) {
     evt.preventDefault();
     if (typeof this._onMarkAsWatched === `function`) {
       this._isWatched = true;
@@ -122,7 +122,7 @@ export default class ComponentCard extends Component {
     }
   }
 
-  onButtonFavoriteClick(evt) {
+  _onButtonFavoriteClick(evt) {
     evt.preventDefault();
     if (typeof this._onMarkAsWatched === `function`) {
       this._isFavorite = !this._isFavorite;
