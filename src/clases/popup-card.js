@@ -45,15 +45,15 @@ export default class PopupCard extends Component {
     this._toggleFavorites = null;
     this._onButtonUndoCommentClick = null;
 
-    this._onButtonClick = this._onButtonClick.bind(this);
-    this._onChangeRatingClick = this._onChangeRatingClick.bind(this);
-    this._onChangeEmojiClick = this._onChangeEmojiClick.bind(this);
-    this._onKeydownEnter = this._onKeydownEnter.bind(this);
-    this._onWindowEscKeyDown = this._onWindowEscKeyDown.bind(this);
-    this._onButtonUndoClick = this._onButtonUndoClick.bind(this);
-    this._onCheckboxControlInputWatchlistClick = this._onCheckboxControlInputWatchlistClick.bind(this);
-    this._onCheckboxControlInputWatchedClick = this._onCheckboxControlInputWatchedClick.bind(this);
-    this._onCheckboxControlInputFavoriteClick = this._onCheckboxControlInputFavoriteClick.bind(this);
+    this.onButtonClick = this.onButtonClick.bind(this);
+    this.onChangeRatingClick = this.onChangeRatingClick.bind(this);
+    this.onChangeEmojiClick = this.onChangeEmojiClick.bind(this);
+    this.onKeydownEnter = this.onKeydownEnter.bind(this);
+    this.onWindowEscKeyDown = this.onWindowEscKeyDown.bind(this);
+    this.onButtonUndoClick = this.onButtonUndoClick.bind(this);
+    this.onCheckboxControlInputWatchlistClick = this.onCheckboxControlInputWatchlistClick.bind(this);
+    this.onCheckboxControlInputWatchedClick = this.onCheckboxControlInputWatchedClick.bind(this);
+    this.onCheckboxControlInputFavoriteClick = this.onCheckboxControlInputFavoriteClick.bind(this);
   }
 
   get template() {
@@ -295,6 +295,36 @@ export default class PopupCard extends Component {
 
     return entry;
   }
+  /**
+   * @param {Boolean} hidden
+   */
+  _updateStatus(hidden) {
+    const statusWrap = this._element.querySelector(`.film-details__user-rating-controls`);
+    const newStatus = createElement(`
+      <div class="film-details__user-rating-controls">
+        <span class="film-details__watched-status film-details__watched-status--active">${this._statusComment}</span>
+        <button class="film-details__watched-reset${hidden ? ` visually-hidden` : ``}" type="button">undo</button>
+      </div>
+    `.trim());
+
+    const parentEl = statusWrap.parentElement;
+    statusWrap.remove();
+    parentEl.insertBefore(newStatus, parentEl.firstChild);
+  }
+
+  _setStatusCommentRemove() {
+    if (this._statusComment === `Comment added`) {
+      this._statusComment = `Comment deleted`;
+      this._updateStatus(true);
+    }
+  }
+
+  setStatusCommentAdd() {
+    if (this._statusComment === `` || this._statusComment === `Comment deleted`) {
+      this._statusComment = `Comment added`;
+      this._updateStatus(false);
+    }
+  }
 
   partialUpdateRating() {
     const userRating = this._element.querySelector(`.film-details__user-rating`);
@@ -315,45 +345,100 @@ export default class PopupCard extends Component {
     const newComments = this._createComments(this._comments);
     commentsWrap.insertAdjacentHTML(`afterBegin`, newComments);
   }
-  /**
-   * @param {Boolean} hidden
-   */
-  _updateStatus(hidden) {
-    const statusWrap = this._element.querySelector(`.film-details__user-rating-controls`);
-    const newStatus = createElement(`
-      <div class="film-details__user-rating-controls">
-        <span class="film-details__watched-status film-details__watched-status--active">${this._statusComment}</span>
-        <button class="film-details__watched-reset${hidden ? ` visually-hidden` : ``}" type="button">undo</button>
-      </div>
-    `.trim());
 
-    const parentEl = statusWrap.parentElement;
-    statusWrap.remove();
-    parentEl.insertBefore(newStatus, parentEl.firstChild);
+  update(data) {
+    this._ratingUser = data.ratingUser;
+    this._isWatchlist = data.isWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+    this._comments = data.comments;
   }
 
-  setStatusCommentAdd() {
-    if (this._statusComment === `` || this._statusComment === `Comment deleted`) {
-      this._statusComment = `Comment added`;
-      this._updateStatus(false);
+  bind() {
+    this._element
+      .querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, this.onButtonClick);
+    window
+      .addEventListener(`keydown`, this.onWindowEscKeyDown);
+    this._element
+      .querySelector(`.film-details__user-rating-score`)
+      .addEventListener(`change`, this.onChangeRatingClick);
+    this._element
+      .querySelector(`.film-details__emoji-list`)
+      .addEventListener(`change`, this.onChangeEmojiClick);
+    this._element
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`keydown`, this.onKeydownEnter);
+    this._element
+      .querySelector(`[name="watchlist"]`)
+      .addEventListener(`click`, this.onCheckboxControlInputWatchlistClick);
+    this._element
+      .querySelector(`[name="watched"]`)
+      .addEventListener(`click`, this.onCheckboxControlInputWatchedClick);
+    this._element
+      .querySelector(`[name="favorite"]`)
+      .addEventListener(`click`, this.onCheckboxControlInputFavoriteClick);
+    this._element
+      .querySelector(`.film-details__watched-reset`)
+      .addEventListener(`click`, this.onButtonUndoClick);
+  }
+
+  unbind() {
+    this._element
+      .querySelector(`.film-details__close-btn`)
+      .removeEventListener(`click`, this.onButtonClick);
+    window
+      .removeEventListener(`keydown`, this.onWindowEscKeyDown);
+    this._element
+      .querySelector(`.film-details__user-rating-score`)
+      .removeEventListener(`change`, this.onChangeRatingClick);
+    this._element
+      .querySelector(`.film-details__emoji-list`)
+      .removeEventListener(`change`, this.onChangeEmojiClick);
+    this._element
+      .querySelector(`.film-details__comment-input`)
+      .removeEventListener(`keydown`, this.onKeydownEnter);
+    this._element
+      .querySelector(`[name="watchlist"]`)
+      .removeEventListener(`click`, this.onCheckboxControlInputWatchlistClick);
+    this._element
+      .querySelector(`[name="watched"]`)
+      .removeEventListener(`click`, this.onCheckboxControlInputWatchedClick);
+    this._element
+      .querySelector(`[name="favorite"]`)
+      .removeEventListener(`click`, this.onCheckboxControlInputFavoriteClick);
+    this._element
+      .querySelector(`.film-details__watched-reset`)
+      .removeEventListener(`click`, this.onButtonUndoClick);
+  }
+
+  onButtonClick() {
+    if (typeof this._onClose === `function`) {
+      this._onClose();
     }
   }
 
-  _setStatusCommentRemove() {
-    if (this._statusComment === `Comment added`) {
-      this._statusComment = `Comment deleted`;
-      this._updateStatus(true);
+  onWindowEscKeyDown(evt) {
+    if (evt.keyCode === KeyCodeType.KEYCODE_ESC) {
+      this._onClose();
     }
   }
 
-  _onChangeEmojiClick(evt) {
+  onChangeRatingClick(evt) {
+    const newData = this._collectFormData();
+    if (typeof this._onRadioRatingChange === `function`) {
+      this._onRadioRatingChange(newData, evt);
+    }
+  }
+
+  onChangeEmojiClick(evt) {
     const target = evt.target;
     const selectEmoji = target.value;
     const emojiAdd = this._element.querySelector(`.film-details__add-emoji-label`);
     emojiAdd.textContent = EmojiType[selectEmoji];
   }
 
-  _onKeydownEnter(evt) {
+  onKeydownEnter(evt) {
     const keyCode = evt.keyCode;
     const target = evt.target;
     const parentEl = evt.target.parentElement;
@@ -370,28 +455,28 @@ export default class PopupCard extends Component {
     }
   }
 
-  _onCheckboxControlInputWatchlistClick() {
+  onCheckboxControlInputWatchlistClick() {
     const newData = this._collectFormData();
     if (typeof this._addWatchlist === `function`) {
       this._addWatchlist(newData);
     }
   }
 
-  _onCheckboxControlInputWatchedClick() {
+  onCheckboxControlInputWatchedClick() {
     const newData = this._collectFormData();
     if (typeof this._addWatched === `function`) {
       this._addWatched(newData);
     }
   }
 
-  _onCheckboxControlInputFavoriteClick() {
+  onCheckboxControlInputFavoriteClick() {
     const newData = this._collectFormData();
     if (typeof this._toggleFavorites === `function`) {
       this._toggleFavorites(newData);
     }
   }
 
-  _onButtonUndoClick() {
+  onButtonUndoClick() {
     const copyCommments = this._comments.slice();
     const lastComment = copyCommments.length - 1;
 
@@ -403,91 +488,6 @@ export default class PopupCard extends Component {
     if (typeof this._onButtonUndoCommentClick === `function`) {
       this._onButtonUndoCommentClick({comments: copyCommments});
     }
-  }
-
-  _onChangeRatingClick(evt) {
-    const newData = this._collectFormData();
-    if (typeof this._onRadioRatingChange === `function`) {
-      this._onRadioRatingChange(newData, evt);
-    }
-  }
-
-  _onButtonClick() {
-    if (typeof this._onClose === `function`) {
-      this._onClose();
-    }
-  }
-
-  _onWindowEscKeyDown(evt) {
-    if (evt.keyCode === KeyCodeType.KEYCODE_ESC) {
-      this._onClose();
-    }
-  }
-
-  update(data) {
-    this._ratingUser = data.ratingUser;
-    this._isWatchlist = data.isWatchlist;
-    this._isWatched = data.isWatched;
-    this._isFavorite = data.isFavorite;
-    this._comments = data.comments;
-  }
-
-  bind() {
-    this._element
-      .querySelector(`.film-details__close-btn`)
-      .addEventListener(`click`, this._onButtonClick);
-    window
-      .addEventListener(`keydown`, this._onWindowEscKeyDown);
-    this._element
-      .querySelector(`.film-details__user-rating-score`)
-      .addEventListener(`change`, this._onChangeRatingClick);
-    this._element
-      .querySelector(`.film-details__emoji-list`)
-      .addEventListener(`change`, this._onChangeEmojiClick);
-    this._element
-      .querySelector(`.film-details__comment-input`)
-      .addEventListener(`keydown`, this._onKeydownEnter);
-    this._element
-      .querySelector(`[name="watchlist"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputWatchlistClick);
-    this._element
-      .querySelector(`[name="watched"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputWatchedClick);
-    this._element
-      .querySelector(`[name="favorite"]`)
-      .addEventListener(`click`, this._onCheckboxControlInputFavoriteClick);
-    this._element
-      .querySelector(`.film-details__watched-reset`)
-      .addEventListener(`click`, this._onButtonUndoClick);
-  }
-
-  unbind() {
-    this._element
-      .querySelector(`.film-details__close-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
-    window
-      .removeEventListener(`keydown`, this._onWindowEscKeyDown);
-    this._element
-      .querySelector(`.film-details__user-rating-score`)
-      .removeEventListener(`change`, this._onChangeRatingClick);
-    this._element
-      .querySelector(`.film-details__emoji-list`)
-      .removeEventListener(`change`, this._onChangeEmojiClick);
-    this._element
-      .querySelector(`.film-details__comment-input`)
-      .removeEventListener(`keydown`, this._onKeydownEnter);
-    this._element
-      .querySelector(`[name="watchlist"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputWatchlistClick);
-    this._element
-      .querySelector(`[name="watched"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputWatchedClick);
-    this._element
-      .querySelector(`[name="favorite"]`)
-      .removeEventListener(`click`, this._onCheckboxControlInputFavoriteClick);
-    this._element
-      .querySelector(`.film-details__watched-reset`)
-      .removeEventListener(`click`, this._onButtonUndoClick);
   }
 
   static createMapper(target) {

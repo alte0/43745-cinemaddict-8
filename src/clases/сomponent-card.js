@@ -29,10 +29,10 @@ export default class ComponentCard extends Component {
     this._onAddToWatchList = null;
     this._onMarkAsWatched = null;
 
-    this._onButtonClick = this._onButtonClick.bind(this);
-    this._onButtonAddWatchlistClick = this._onButtonAddWatchlistClick.bind(this);
-    this._onButtonMarkAsWatchedClick = this._onButtonMarkAsWatchedClick.bind(this);
-    this._onButtonFavoriteClick = this._onButtonFavoriteClick.bind(this);
+    this.onButtonClick = this.onButtonClick.bind(this);
+    this.onButtonAddWatchlistClick = this.onButtonAddWatchlistClick.bind(this);
+    this.onButtonMarkAsWatchedClick = this.onButtonMarkAsWatchedClick.bind(this);
+    this.onButtonFavoriteClick = this.onButtonFavoriteClick.bind(this);
   }
 
   set open(fn) {
@@ -50,37 +50,6 @@ export default class ComponentCard extends Component {
   set onFavorite(fn) {
     this._onFavorite = fn;
   }
-
-  _onButtonClick() {
-    if (typeof this._open === `function`) {
-      this._open();
-    }
-  }
-
-  _onButtonAddWatchlistClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onAddToWatchList === `function`) {
-      this._isWatchlist = true;
-      this._onAddToWatchList(this._isWatchlist);
-    }
-  }
-
-  _onButtonMarkAsWatchedClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._isWatched = true;
-      this._onMarkAsWatched(this._isWatched);
-    }
-  }
-
-  _onButtonFavoriteClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._isFavorite = !this._isFavorite;
-      this._onFavorite(this._isFavorite);
-    }
-  }
-
   /**
    * @param {Array} arr
    * @return {String}
@@ -106,20 +75,58 @@ export default class ComponentCard extends Component {
   }
 
   bind() {
-    this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this._onButtonClick);
+    this._element.querySelector(`.film-card__comments`)
+      .addEventListener(`click`, this.onButtonClick);
     if (this._element.querySelector(`.film-card__controls`)) {
-      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._onButtonAddWatchlistClick);
-      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._onButtonMarkAsWatchedClick);
-      this._element.querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._onButtonFavoriteClick);
+      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .addEventListener(`click`, this.onButtonAddWatchlistClick);
+      this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .addEventListener(`click`, this.onButtonMarkAsWatchedClick);
+      this._element.querySelector(`.film-card__controls-item--favorite`)
+        .addEventListener(`click`, this.onButtonFavoriteClick);
     }
   }
 
   unbind() {
-    this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onButtonClick);
+    this._element.querySelector(`.film-card__comments`)
+      .removeEventListener(`click`, this.onButtonClick);
     if (this._element.querySelector(`.film-card__controls`)) {
-      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).removeEventListener(`click`, this._onButtonAddWatchlistClick);
-      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).removeEventListener(`click`, this._onButtonMarkAsWatchedClick);
-      this._element.querySelector(`.film-card__controls-item--favorite`).removeEventListener(`click`, this._onButtonFavoriteClick);
+      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .removeEventListener(`click`, this.onButtonAddWatchlistClick);
+      this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .removeEventListener(`click`, this.onButtonMarkAsWatchedClick);
+      this._element.querySelector(`.film-card__controls-item--favorite`)
+        .removeEventListener(`click`, this.onButtonFavoriteClick);
+    }
+  }
+
+  onButtonClick() {
+    if (typeof this._open === `function`) {
+      this._open();
+    }
+  }
+
+  onButtonAddWatchlistClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onAddToWatchList === `function`) {
+      this._isWatchlist = true;
+      this._onAddToWatchList(this._isWatchlist);
+    }
+  }
+
+  onButtonMarkAsWatchedClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._isWatched = true;
+      this._onMarkAsWatched(this._isWatched);
+    }
+  }
+
+  onButtonFavoriteClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._isFavorite = !this._isFavorite;
+      this._onFavorite(this._isFavorite);
     }
   }
 }
