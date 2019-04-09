@@ -11,6 +11,14 @@ export class Provider {
     this._needSync = false;
   }
 
+  set isNeedSync(state) {
+    this._isNeedSync = state;
+  }
+
+  get isNeedSync() {
+    return this._isNeedSync;
+  }
+
   updateMovie({id, data}) {
     if (Provider.isOnline()) {
       return this._api.updateMovie({id, data})

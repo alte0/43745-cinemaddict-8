@@ -10,6 +10,10 @@ export default class Search extends Component {
     this._onFormSubmit = this._onFormSubmit.bind(this);
   }
 
+  set search(fn) {
+    this._search = fn;
+  }
+
   get template() {
     return `
       <form class="header__search search">
@@ -17,10 +21,6 @@ export default class Search extends Component {
         <button type="submit" class="visually-hidden">Search</button>
       </form>
     `.trim();
-  }
-
-  set search(fn) {
-    this._search = fn;
   }
 
   bind() {

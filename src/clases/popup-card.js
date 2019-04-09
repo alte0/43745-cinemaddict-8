@@ -56,6 +56,33 @@ export default class PopupCard extends Component {
     this._onCheckboxControlInputFavoriteClick = this._onCheckboxControlInputFavoriteClick.bind(this);
   }
 
+  set close(fn) {
+    this._onClose = fn;
+  }
+  set onTextareaKeyDown(fn) {
+    this._onTextareaKeyDown = fn;
+  }
+
+  set onRadioRatingChange(fn) {
+    this._onRadioRatingChange = fn;
+  }
+
+  set addWatchlist(fn) {
+    this._addWatchlist = fn;
+  }
+
+  set addWatched(fn) {
+    this._addWatched = fn;
+  }
+
+  set toggleFavorites(fn) {
+    this._toggleFavorites = fn;
+  }
+
+  set onButtonUndoCommentClick(fn) {
+    this._onButtonUndoCommentClick = fn;
+  }
+
   get template() {
     return `
       <section class="film-details">
@@ -191,32 +218,6 @@ export default class PopupCard extends Component {
     `.trim();
   }
 
-  set close(fn) {
-    this._onClose = fn;
-  }
-  set onTextareaKeyDown(fn) {
-    this._onTextareaKeyDown = fn;
-  }
-
-  set onRadioRatingChange(fn) {
-    this._onRadioRatingChange = fn;
-  }
-
-  set addWatchlist(fn) {
-    this._addWatchlist = fn;
-  }
-
-  set addWatched(fn) {
-    this._addWatched = fn;
-  }
-
-  set toggleFavorites(fn) {
-    this._toggleFavorites = fn;
-  }
-
-  set onButtonUndoCommentClick(fn) {
-    this._onButtonUndoCommentClick = fn;
-  }
   /**
    * @param {Number} scoreUser
    * @return {string}
