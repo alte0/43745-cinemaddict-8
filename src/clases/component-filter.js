@@ -26,6 +26,12 @@ export default class ComponentFilter extends Component {
     this._onFilter = fn;
   }
 
+  _onLinkClick(evt) {
+    if (typeof this._onFilter === `function`) {
+      this._onFilter(evt);
+    }
+  }
+
   bind() {
     this._element.addEventListener(`click`, this._onLinkClick);
   }
@@ -34,9 +40,4 @@ export default class ComponentFilter extends Component {
     this._element.removeEventListener(`click`, this._onLinkClick);
   }
 
-  _onLinkClick(evt) {
-    if (typeof this._onFilter === `function`) {
-      this._onFilter(evt);
-    }
-  }
 }

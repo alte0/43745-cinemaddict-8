@@ -58,6 +58,36 @@ export default class ComponentCard extends Component {
     return `<button class="film-card__comments">${arr.length} comments</button>`;
   }
 
+  _onButtonClick() {
+    if (typeof this._open === `function`) {
+      this._open();
+    }
+  }
+
+  _onButtonAddWatchlistClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onAddToWatchList === `function`) {
+      this._isWatchlist = true;
+      this._onAddToWatchList(this._isWatchlist);
+    }
+  }
+
+  _onButtonMarkAsWatchedClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._isWatched = true;
+      this._onMarkAsWatched(this._isWatched);
+    }
+  }
+
+  _onButtonFavoriteClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._isFavorite = !this._isFavorite;
+      this._onFavorite(this._isFavorite);
+    }
+  }
+
   partialUpdate() {
     const btnCommentOpen = this._element.querySelector(`.film-card__comments`);
     const parent = btnCommentOpen.parentElement;
@@ -97,36 +127,6 @@ export default class ComponentCard extends Component {
         .removeEventListener(`click`, this._onButtonMarkAsWatchedClick);
       this._element.querySelector(`.film-card__controls-item--favorite`)
         .removeEventListener(`click`, this._onButtonFavoriteClick);
-    }
-  }
-
-  _onButtonClick() {
-    if (typeof this._open === `function`) {
-      this._open();
-    }
-  }
-
-  _onButtonAddWatchlistClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onAddToWatchList === `function`) {
-      this._isWatchlist = true;
-      this._onAddToWatchList(this._isWatchlist);
-    }
-  }
-
-  _onButtonMarkAsWatchedClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._isWatched = true;
-      this._onMarkAsWatched(this._isWatched);
-    }
-  }
-
-  _onButtonFavoriteClick(evt) {
-    evt.preventDefault();
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._isFavorite = !this._isFavorite;
-      this._onFavorite(this._isFavorite);
     }
   }
 }

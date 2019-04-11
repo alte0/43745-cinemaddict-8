@@ -319,6 +319,84 @@ export default class PopupCard extends Component {
     }
   }
 
+  _onButtonCloseClick() {
+    if (typeof this._onClose === `function`) {
+      this._onClose();
+    }
+  }
+
+  _onWindowEscKeyDown(evt) {
+    if (evt.keyCode === KeyCodeType.KEYCODE_ESC) {
+      this._onClose();
+    }
+  }
+
+  _onChangeRatingClick(evt) {
+    const newData = this._collectFormData();
+    if (typeof this._onRadioRatingChange === `function`) {
+      this._onRadioRatingChange(newData, evt);
+    }
+  }
+
+  _onChangeEmojiClick(evt) {
+    const target = evt.target;
+    const selectEmoji = target.value;
+    const emojiAdd = this._element.querySelector(`.film-details__add-emoji-label`);
+    emojiAdd.textContent = EmojiType[selectEmoji];
+  }
+
+  _onKeydownEnter(evt) {
+    const keyCode = evt.keyCode;
+    const target = evt.target;
+    const parentEl = evt.target.parentElement;
+
+    if (evt.metaKey || evt.ctrlKey && (keyCode === KeyCodeType.KEYCODE_ENTER && target.value !== ``)) {
+      const newData = this._collectFormData();
+
+      setDefaulStyle(parentEl);
+      setBlockElem(target);
+
+      if (typeof this._onTextareaKeyDown === `function`) {
+        this._onTextareaKeyDown(newData);
+      }
+    }
+  }
+
+  _onCheckboxControlInputWatchlistClick() {
+    const newData = this._collectFormData();
+    if (typeof this._addWatchlist === `function`) {
+      this._addWatchlist(newData);
+    }
+  }
+
+  _onCheckboxControlInputWatchedClick() {
+    const newData = this._collectFormData();
+    if (typeof this._addWatched === `function`) {
+      this._addWatched(newData);
+    }
+  }
+
+  _onCheckboxControlInputFavoriteClick() {
+    const newData = this._collectFormData();
+    if (typeof this._toggleFavorites === `function`) {
+      this._toggleFavorites(newData);
+    }
+  }
+
+  _onButtonUndoClick() {
+    const copyCommments = this._comments.slice();
+    const lastComment = copyCommments.length - 1;
+
+    if (copyCommments[lastComment].author === `User`) {
+      copyCommments.splice(lastComment, 1);
+      this._setStatusCommentRemove();
+    }
+
+    if (typeof this._onButtonUndoCommentClick === `function`) {
+      this._onButtonUndoCommentClick({ comments: copyCommments });
+    }
+  }
+
   setStatusCommentAdd() {
     if (this._statusComment === `` || this._statusComment === `Comment deleted`) {
       this._statusComment = `Comment added`;
@@ -410,84 +488,6 @@ export default class PopupCard extends Component {
     this._element
       .querySelector(`.film-details__watched-reset`)
       .removeEventListener(`click`, this._onButtonUndoClick);
-  }
-
-  _onButtonCloseClick() {
-    if (typeof this._onClose === `function`) {
-      this._onClose();
-    }
-  }
-
-  _onWindowEscKeyDown(evt) {
-    if (evt.keyCode === KeyCodeType.KEYCODE_ESC) {
-      this._onClose();
-    }
-  }
-
-  _onChangeRatingClick(evt) {
-    const newData = this._collectFormData();
-    if (typeof this._onRadioRatingChange === `function`) {
-      this._onRadioRatingChange(newData, evt);
-    }
-  }
-
-  _onChangeEmojiClick(evt) {
-    const target = evt.target;
-    const selectEmoji = target.value;
-    const emojiAdd = this._element.querySelector(`.film-details__add-emoji-label`);
-    emojiAdd.textContent = EmojiType[selectEmoji];
-  }
-
-  _onKeydownEnter(evt) {
-    const keyCode = evt.keyCode;
-    const target = evt.target;
-    const parentEl = evt.target.parentElement;
-
-    if (evt.metaKey || evt.ctrlKey && (keyCode === KeyCodeType.KEYCODE_ENTER && target.value !== ``)) {
-      const newData = this._collectFormData();
-
-      setDefaulStyle(parentEl);
-      setBlockElem(target);
-
-      if (typeof this._onTextareaKeyDown === `function`) {
-        this._onTextareaKeyDown(newData);
-      }
-    }
-  }
-
-  _onCheckboxControlInputWatchlistClick() {
-    const newData = this._collectFormData();
-    if (typeof this._addWatchlist === `function`) {
-      this._addWatchlist(newData);
-    }
-  }
-
-  _onCheckboxControlInputWatchedClick() {
-    const newData = this._collectFormData();
-    if (typeof this._addWatched === `function`) {
-      this._addWatched(newData);
-    }
-  }
-
-  _onCheckboxControlInputFavoriteClick() {
-    const newData = this._collectFormData();
-    if (typeof this._toggleFavorites === `function`) {
-      this._toggleFavorites(newData);
-    }
-  }
-
-  _onButtonUndoClick() {
-    const copyCommments = this._comments.slice();
-    const lastComment = copyCommments.length - 1;
-
-    if (copyCommments[lastComment].author === `User`) {
-      copyCommments.splice(lastComment, 1);
-      this._setStatusCommentRemove();
-    }
-
-    if (typeof this._onButtonUndoCommentClick === `function`) {
-      this._onButtonUndoCommentClick({comments: copyCommments});
-    }
   }
 
   static createMapper(target) {
