@@ -1,5 +1,5 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
-
+# [Посмотреть вживую](https://alte0.github.io/43745-cinemaddict-8/)
 * Студент: [Максим Дмитриев](https://up.htmlacademy.ru/ecmascript/8/user/43745).
 * Наставник: `Кекс`.
 
